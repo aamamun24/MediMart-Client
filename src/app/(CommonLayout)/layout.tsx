@@ -1,8 +1,11 @@
+import Footer from "@/components/shared/Footer";
+
 const CommonLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <>
-      <main>{children}</main>
-    </>
+    <main>
+      {children}
+      <Footer />
+    </main>
   );
 };
 
