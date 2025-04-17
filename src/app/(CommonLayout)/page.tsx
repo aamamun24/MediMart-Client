@@ -1,7 +1,7 @@
 const HomePage = () => {
   return (
     <div>
-      <h1></h1>
+      <h1>Welcome to MediMart</h1>
     </div>
   );
 };
