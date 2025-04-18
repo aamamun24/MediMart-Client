@@ -1,65 +1,36 @@
 "use client";
-import { Medicine } from "@/types";
+import { useGetSingleMedicineQuery } from "@/redux/features/medicineApi";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-
-const medicineDummyData: Medicine[] = [
-  {
-    id: "1",
-    name: "Paracetamol 10g",
-    image:
-      "https://t4.ftcdn.net/jpg/02/81/42/77/240_F_281427785_gfahY8bX4VYCGo6jlfO8St38wS9cJQop.jpg",
-    brand: "ACI",
-    price: 20.5,
-    form: "Tablet",
-    category: "Painkiller",
-    simptoms: ["Fever", "Headache", "Body ache"],
-    description:
-      "Paracetamol is a common painkiller used to treat aches and pain. It can also be used to reduce a high temperature.",
-    quantity: 100,
-    prescriptionRequired: false,
-    manufacturer: "ACI Limited",
-    expiryDate: "2026-12-31",
-  },
-];
+import { useState } from "react";
 
 const MedicineDetailsPage = () => {
   const params = useParams();
   const id = params?.id as string;
 
-  const [medicine, setMedicine] = useState<Medicine | null>(null);
+  const { data, isLoading, error } = useGetSingleMedicineQuery(id);
+  const medicine = data?.data;
+
+  console.log("here", medicine);
   const [quantity, setQuantity] = useState(1);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchMedicine = () => {
-      // Simulate API call (replace this with actual API call later)
-      const foundMedicine = medicineDummyData.find((m) => m.id === id);
-      if (foundMedicine) {
-        setMedicine(foundMedicine);
-      } else {
-        setMedicine(null); // Handle if medicine not found
-      }
-      setLoading(false);
-    };
-
-    if (id) {
-      fetchMedicine();
-    }
-  }, [id]);
 
   const handleAddToCart = () => {
     console.log(`Added ${quantity} of ${medicine?.name} to cart`);
   };
 
-  if (loading) {
-    return <div className="text-center p-10">Loading medicine details...</div>;
+  if (isLoading) {
+    return <div className="text-center p-10">Loading...</div>;
   }
 
   if (!medicine) {
+    return <div className="text-center p-10">No medicine found.</div>;
+  }
+
+  if (error) {
     return (
-      <div className="text-center p-10 text-red-600">Medicine not found.</div>
+      <div className="text-center p-10 text-red-500">
+        Failed to load medicine.
+      </div>
     );
   }
 
@@ -82,13 +53,16 @@ const MedicineDetailsPage = () => {
             {medicine.brand} • {medicine.form}
           </p>
           <p className="text-xl text-blue-600 font-semibold mb-4">
-            ${medicine.price.toFixed(2)}
+            ${medicine.price}
           </p>
 
           <p className="mb-4">{medicine.description}</p>
 
           <div className="mb-4">
-            <strong>Symptoms:</strong> {medicine.simptoms.join(", ")}
+            <strong>Symptoms:</strong>{" "}
+            {medicine.simptoms?.map((symptom: string, index: number) => (
+              <span key={index}>{symptom} </span>
+            ))}
           </div>
 
           <div className="mb-2">

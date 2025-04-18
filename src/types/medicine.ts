@@ -1,4 +1,4 @@
-export type Medicine = {
+export type TMedicine = {
   id: string;
   name: string;
   image: string;
