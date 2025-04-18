@@ -1,8 +1,14 @@
 "use client";
+
+import Loader from "@/components/shared/Loader";
+import { addToCart } from "@/redux/features/cartSlice";
 import { useGetSingleMedicineQuery } from "@/redux/features/medicineApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 const MedicineDetailsPage = () => {
   const params = useParams();
@@ -11,95 +17,172 @@ const MedicineDetailsPage = () => {
   const { data, isLoading, error } = useGetSingleMedicineQuery(id);
   const medicine = data?.data;
 
-  console.log("here", medicine);
   const [quantity, setQuantity] = useState(1);
+  const dispatch = useAppDispatch();
 
   const handleAddToCart = () => {
-    console.log(`Added ${quantity} of ${medicine?.name} to cart`);
+    if (medicine) {
+      dispatch(
+        addToCart({
+          _id: medicine._id,
+          name: medicine.name,
+          price: medicine.price,
+          quantity,
+          stockQuantity: medicine.quantity,
+          image: medicine.image,
+        })
+      );
+      toast.success(`${medicine.name} added to cart!`);
+    }
+  };
+
+  const handleIncrease = () => {
+    if (quantity < (medicine?.quantity || 1)) {
+      setQuantity(quantity + 1);
+    }
+  };
+
+  const handleDecrease = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
   };
 
   if (isLoading) {
-    return <div className="text-center p-10">Loading...</div>;
+    return <Loader />;
   }
 
   if (!medicine) {
-    return <div className="text-center p-10">No medicine found.</div>;
-  }
-
-  if (error) {
     return (
-      <div className="text-center p-10 text-red-500">
-        Failed to load medicine.
+      <div className="flex justify-center items-center h-[70vh]">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-700">
+            Medicine Not Found
+          </h2>
+          <p className="text-gray-500 mt-2">
+            Sorry, the medicine you are looking for is unavailable.
+          </p>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="max-w-5xl mx-auto p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded shadow">
-        <div className="relative w-full h-80">
-          <Image
-            src={medicine.image}
-            alt={medicine.name}
-            layout="fill"
-            objectFit="contain"
-            className="rounded"
-          />
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-[70vh]">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500">
+            Something went wrong!
+          </h2>
+          <p className="text-gray-500 mt-2">Please try again later.</p>
         </div>
-
-        <div>
-          <h1 className="text-3xl font-bold mb-2">{medicine.name}</h1>
-          <p className="text-gray-600 mb-2">
-            {medicine.brand} • {medicine.form}
-          </p>
-          <p className="text-xl text-blue-600 font-semibold mb-4">
-            ${medicine.price}
-          </p>
-
-          <p className="mb-4">{medicine.description}</p>
-
-          <div className="mb-4">
-            <strong>Symptoms:</strong>{" "}
-            {medicine.simptoms?.map((symptom: string, index: number) => (
-              <span key={index}>{symptom} </span>
-            ))}
+      </div>
+    );
+  }
+  return (
+    <div className="bg-[#f7fafc]">
+      <div className="container mx-auto px-6 py-12 min-h-screen flex items-center justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 bg-white rounded-3xl shadow-2xl overflow-hidden">
+          {/* Left Side: Image */}
+          <div className="bg-[#e6f4f1] flex items-center justify-center p-8">
+            <div className="relative w-full h-96">
+              <Image
+                src={medicine.image}
+                alt={medicine.name}
+                layout="fill"
+                objectFit="contain"
+                className="rounded-2xl"
+              />
+            </div>
           </div>
 
-          <div className="mb-2">
-            <strong>Manufacturer:</strong> {medicine.manufacturer}
-          </div>
-          <div className="mb-2">
-            <strong>Expiry Date:</strong> {medicine.expiryDate}
-          </div>
-          <div className="mb-2">
-            <strong>Category:</strong> {medicine.category}
-          </div>
-          <div className="mb-2">
-            <strong>Stock Available:</strong> {medicine.quantity}
-          </div>
-          <div className="mb-6">
-            <strong>Prescription Required:</strong>{" "}
-            {medicine.prescriptionRequired ? "Yes" : "No"}
-          </div>
+          {/* Right Side: Info */}
+          <div className="flex flex-col justify-between p-8">
+            <div>
+              <h1 className="text-4xl font-extrabold text-[#1a365d] mb-2">
+                {medicine.name}
+              </h1>
+              <p className="text-lg text-[#319795] mb-4">
+                {medicine.brand} • {medicine.form}
+              </p>
 
-          <div className="flex items-center gap-2 mb-4">
-            <label>Quantity:</label>
-            <input
-              type="number"
-              min="1"
-              max={medicine.quantity}
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              className="border p-2 w-20"
-            />
-          </div>
+              <p className="text-4xl font-bold text-[#38a169] mb-6">
+                ${medicine.price.toFixed(2)}
+              </p>
 
-          <button
-            onClick={handleAddToCart}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded"
-          >
-            Add to Cart
-          </button>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                {medicine.description}
+              </p>
+
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-800 mb-1">Symptoms:</h3>
+                <div className="flex flex-wrap gap-2">
+                  {medicine.simptoms?.map((symptom: string, index: number) => (
+                    <span
+                      key={index}
+                      className="bg-[#bee3f8] text-[#2c5282] px-3 py-1 rounded-full text-sm"
+                    >
+                      {symptom}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600 text-sm mb-6">
+                <p>
+                  <strong className="text-gray-800">Manufacturer:</strong>{" "}
+                  {medicine.manufacturer}
+                </p>
+                <p>
+                  <strong className="text-gray-800">Expiry:</strong>{" "}
+                  {medicine.expiryDate}
+                </p>
+                <p>
+                  <strong className="text-gray-800">Category:</strong>{" "}
+                  {medicine.category}
+                </p>
+                <p>
+                  <strong className="text-gray-800">Stock:</strong>{" "}
+                  {medicine.quantity}
+                </p>
+                <p>
+                  <strong className="text-gray-800">Prescription:</strong>{" "}
+                  {medicine.prescriptionRequired ? "Yes" : "No"}
+                </p>
+              </div>
+            </div>
+
+            {/* Quantity Selector and Button */}
+            <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex items-center border rounded-lg overflow-hidden bg-[#edf2f7]">
+                <button
+                  onClick={handleDecrease}
+                  className="px-4 py-2 text-lg font-bold text-[#3182ce] hover:bg-[#ebf8ff]"
+                >
+                  -
+                </button>
+                <input
+                  type="text"
+                  readOnly
+                  value={quantity}
+                  className="w-16 text-center bg-transparent outline-none border-none text-lg font-medium"
+                />
+                <button
+                  onClick={handleIncrease}
+                  className="px-4 py-2 text-lg font-bold text-[#3182ce] hover:bg-[#ebf8ff]"
+                >
+                  +
+                </button>
+              </div>
+
+              <button
+                onClick={handleAddToCart}
+                className="flex items-center gap-2 bg-gradient-to-r from-[#68d391] to-[#4fd1c5] hover:from-[#48bb78] hover:to-[#38b2ac] transition-all text-white py-3 px-8 rounded-xl text-lg font-semibold shadow-md"
+              >
+                <ShoppingCart /> Add to Cart
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
