@@ -2,7 +2,7 @@ import Footer from "@/components/shared/Footer";
 
 const CommonLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main>
+    <main className="bg-white">
       {children}
       <Footer />
     </main>
