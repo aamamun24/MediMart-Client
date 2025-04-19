@@ -157,7 +157,7 @@ const MedicineDetailsPage = () => {
               <div className="flex items-center border rounded-lg overflow-hidden bg-[#edf2f7]">
                 <button
                   onClick={handleDecrease}
-                  className="px-4 py-2 text-lg font-bold text-[#3182ce] hover:bg-[#ebf8ff]"
+                  className="px-2 py-2 text-lg font-bold text-[#3182ce] hover:bg-[#ebf8ff]"
                 >
                   -
                 </button>
@@ -165,11 +165,11 @@ const MedicineDetailsPage = () => {
                   type="text"
                   readOnly
                   value={quantity}
-                  className="w-16 text-center bg-transparent outline-none border-none text-lg font-medium"
+                  className="w-8 text-center bg-transparent outline-none border-none text-lg font-medium"
                 />
                 <button
                   onClick={handleIncrease}
-                  className="px-4 py-2 text-lg font-bold text-[#3182ce] hover:bg-[#ebf8ff]"
+                  className="px-2 py-2 text-lg font-bold text-[#3182ce] hover:bg-[#ebf8ff]"
                 >
                   +
                 </button>
