@@ -62,9 +62,9 @@ const Navbar = () => {
 
           <div className="flex items-center gap-4">
             <Link
-              href="/loginpage"
+              href="/login"
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                pathname === "/loginpage" 
+                pathname === "/login" 
                   ? 'bg-teal-600 text-white' 
                   : 'text-gray-700 hover:bg-teal-100 hover:text-teal-800'
               }`}
