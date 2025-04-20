@@ -1,11 +1,11 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { clearCart } from "@/redux/features/cartSlice";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
+import { clearCart } from "@/redux/features/cart/cartSlice";
 
 const CheckoutPage = () => {
   const { items } = useAppSelector((state) => state.cart);

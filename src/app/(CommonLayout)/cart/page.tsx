@@ -1,13 +1,9 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  clearCart,
-  removeFromCart,
-  updateQuantity,
-} from "@/redux/features/cartSlice";
 import Link from "next/link";
 import Image from "next/image";
+import { clearCart, removeFromCart, updateQuantity } from "@/redux/features/cart/cartSlice";
 
 const CartPage = () => {
   const { items } = useAppSelector((state) => state.cart);

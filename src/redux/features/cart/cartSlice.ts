@@ -54,6 +54,10 @@ const cartSlice = createSlice({
   },
 });
 
+// Selector to get the cart items
+export const selectCart = (state: { cart: CartState }) => state.cart.items;
+
 export const { addToCart, removeFromCart, updateQuantity, clearCart } =
   cartSlice.actions;
+
 export default cartSlice.reducer;
