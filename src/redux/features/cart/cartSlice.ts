@@ -7,6 +7,7 @@ interface CartItem {
   quantity: number;
   stockQuantity: number;
   image?: string;
+  prescriptionRequired?: boolean;
 }
 
 interface CartState {
@@ -26,9 +27,11 @@ const cartSlice = createSlice({
         (item) => item._id === action.payload._id
       );
       if (existingItem) {
-        if (existingItem.quantity < existingItem.stockQuantity) {
-          existingItem.quantity += action.payload.quantity;
-        }
+        const newQuantity = existingItem.quantity + action.payload.quantity;
+        existingItem.quantity = Math.min(
+          newQuantity,
+          existingItem.stockQuantity
+        );
       } else {
         state.items.push(action.payload);
       }
@@ -51,6 +54,10 @@ const cartSlice = createSlice({
   },
 });
 
+// Selector to get the cart items
+export const selectCart = (state: { cart: CartState }) => state.cart.items;
+
 export const { addToCart, removeFromCart, updateQuantity, clearCart } =
   cartSlice.actions;
+
 export default cartSlice.reducer;
