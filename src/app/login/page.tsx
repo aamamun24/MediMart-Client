@@ -1,8 +1,14 @@
 "use client";
 
+import { useLoginMutation } from "@/redux/features/auth/authApi";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { verifyToken } from "@/utils/verifyToken";
+import { setUser, TUser } from "@/redux/features/auth/authSlice";
+import { useAppDispatch } from "@/redux/hooks";
 
 interface LoginFormData {
   email: string;
@@ -11,9 +17,38 @@ interface LoginFormData {
 }
 
 export default function Login() {
-  const { register, formState: { errors } } = useForm<LoginFormData>();
+  const router = useRouter();
+  const dispatch =useAppDispatch()
+  const [login, { isLoading }] = useLoginMutation();
+  const { 
+    register, 
+    handleSubmit,
+    formState: { errors } 
+  } = useForm<LoginFormData>();
 
- ;
+  const onSubmit = async (data: LoginFormData) => {
+    const toastId = toast.loading("Logging in...");
+    try{
+      const userInfo = {
+        email:data.email,
+        password:data.password,
+      }
+     const res=await login(userInfo).unwrap();
+     const user = verifyToken(res.data.accessToken) as TUser;
+      // console.log(user)
+    //  console.log(res)
+    dispatch(setUser({user:user, token:res.data.accessToken}) );
+  
+      toast.success("Logged in successfully!", { id: toastId });
+      router.push("/");
+      
+      // Verify Redux state
+
+    }catch(err){
+      toast.error('Something went wrong',{id:toastId ,duration:2000})
+      console.error("Login failed:", err);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white mt-8">
@@ -23,7 +58,7 @@ export default function Login() {
           <p className="mt-2 text-teal-500">Sign in to your account</p>
         </div>
 
-        <form  className="space-y-4"autoComplete="off">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" autoComplete="off">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-teal-700">
               Email
@@ -31,7 +66,13 @@ export default function Login() {
             <input
               id="email"
               type="email"
-              {...register("email", { required: "Email is required" })}
+              {...register("email", { 
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Invalid email address"
+                }
+              })}
               autoComplete="off"
               className="w-full px-4 py-2 mt-1 border border-teal-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
             />
@@ -74,9 +115,10 @@ export default function Login() {
 
           <button 
             type="submit" 
-            className="w-full px-4 py-2 text-white bg-teal-500 rounded-lg hover:bg-teal-700 transition duration-200"
+            disabled={isLoading}
+            className="w-full px-4 py-2 text-white bg-teal-500 rounded-lg hover:bg-teal-700 transition duration-200 disabled:opacity-70"
           >
-            Login
+            {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
 
@@ -91,7 +133,7 @@ export default function Login() {
 
         <div className="flex flex-col space-y-3">
           <button
-          
+            type="button"
             className="flex items-center justify-center px-4 py-2 text-white bg-teal-500 rounded-lg hover:bg-teal-700 transition duration-200"
           >
             <Image 
@@ -104,7 +146,7 @@ export default function Login() {
             Login with GitHub
           </button>
           <button
-            
+            type="button"
             className="flex items-center justify-center px-4 py-2 text-white bg-teal-500 rounded-lg hover:bg-teal-700 transition duration-200"
           >
             <Image 

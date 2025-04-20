@@ -18,3 +18,4 @@ export const baseApi = createApi({
   endpoints: () => ({}),
   tagTypes: ["Medicine"], // Ensure this matches the tag used in medicineApi
 });
+
