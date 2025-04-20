@@ -11,7 +11,7 @@ export type TUser = {
   exp: number;
 };
 
-type TAuthState = {
+export type TAuthState = {
   user: null | TUser;
   token: null | string;
 };
