@@ -24,7 +24,7 @@ const MedicineDetailsPage = () => {
     if (medicine) {
       dispatch(
         addToCart({
-          _id: medicine._id,
+          _id: medicine._id!,
           name: medicine.name,
           price: medicine.price,
           quantity,

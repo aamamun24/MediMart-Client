@@ -62,18 +62,16 @@ const medicineApi = baseApi.injectEndpoints({
 
     // GET single medicine by ID
     getSingleMedicine: builder.query<MedicineResponse, string>({
-      query: (id) => `/medicines/${id}`,
-      providesTags: ["Medicine"],
+      query: (id) => `/products/${id}`,
     }),
 
     // CREATE a medicine
     createMedicine: builder.mutation<MedicineResponse, Partial<IMedicine>>({
       query: (medicineData) => ({
-        url: "/medicines",
+        url: "/products",
         method: "POST",
         body: medicineData,
-      }),
-      invalidatesTags: ["Medicine"],
+      })
     }),
 
     // UPDATE a medicine
@@ -82,20 +80,18 @@ const medicineApi = baseApi.injectEndpoints({
       { medicineId: string; data: Partial<IMedicine> }
     >({
       query: ({ medicineId, data }) => ({
-        url: `/medicines/${medicineId}`,
+        url: `/products/${medicineId}`,
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["Medicine"],
     }),
 
     // DELETE a medicine
     deleteMedicine: builder.mutation<DeleteResponse, string>({
       query: (medicineId) => ({
-        url: `/medicines/${medicineId}`,
+        url: `/products/${medicineId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Medicine"],
     }),
   }),
   overrideExisting: false,
