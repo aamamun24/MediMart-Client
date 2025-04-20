@@ -8,6 +8,7 @@ export type TProduct = {
 
 // Pharmacy order interface
 export interface IOrder {
+  _id:string;
   userName: string;
   userEmail: string;
   products: TProduct[];

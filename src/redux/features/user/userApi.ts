@@ -9,6 +9,13 @@ const userApi = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+
+    getAllUser: builder.query<{ data: User }, void>({
+      query: () => ({
+        url: "/users",
+        method: "GET",
+      }),
+    }),
     updateUser: builder.mutation<{ data: User }, Partial<User>>({
       query: (userData) => ({
         url: "/users", // Fixed to match your backend route
@@ -27,4 +34,4 @@ const userApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetUserQuery, useUpdateUserMutation, useUpdatePasswordMutation } = userApi;
+export const { useGetUserQuery, useUpdateUserMutation, useUpdatePasswordMutation, useGetAllUserQuery } = userApi;

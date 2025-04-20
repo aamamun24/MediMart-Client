@@ -2,6 +2,7 @@ import { baseApi } from "../../api/baseApi"; // Adjust path
 import { TProduct } from "./orderSlice";
 
 type TOrder = {
+  _id: string
   userName: string;
   userEmail: string;
   products: {
