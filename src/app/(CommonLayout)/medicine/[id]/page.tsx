@@ -30,6 +30,7 @@ const MedicineDetailsPage = () => {
           quantity,
           stockQuantity: medicine.quantity,
           image: medicine.image,
+          prescriptionRequired: medicine.prescriptionRequired,
         })
       );
       toast.success(`${medicine.name} added to cart!`);

@@ -1,7 +1,11 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { removeFromCart, updateQuantity } from "@/redux/features/cartSlice";
+import {
+  clearCart,
+  removeFromCart,
+  updateQuantity,
+} from "@/redux/features/cartSlice";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -10,8 +14,11 @@ const CartPage = () => {
   const dispatch = useAppDispatch();
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
-    if (newQuantity > 0) {
-      dispatch(updateQuantity({ id, quantity: newQuantity }));
+    const item = items.find((item) => item._id === id);
+    if (item) {
+      if (newQuantity > 0 && newQuantity <= item.stockQuantity) {
+        dispatch(updateQuantity({ id, quantity: newQuantity }));
+      }
     }
   };
 
@@ -19,14 +26,21 @@ const CartPage = () => {
     dispatch(removeFromCart(id));
   };
 
+  const handleClearCart = () => {
+    dispatch(clearCart());
+  };
+
   const total = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
 
+  // 👉 Define prescriptionRequired correctly
+  const prescriptionRequired = items.some((item) => item.prescriptionRequired);
+
   return (
     <div className="bg-gray-100">
-      <div className=" flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <div className="container mx-auto px-6 py-12">
           <h1 className="text-4xl font-semibold text-teal-800 mb-8 text-center">
             Your Shopping Cart
@@ -44,6 +58,27 @@ const CartPage = () => {
             </div>
           ) : (
             <div className="space-y-8">
+              {/* 👉 Top warning if prescription needed */}
+              {prescriptionRequired && (
+                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6">
+                  <p className="font-semibold">
+                    Some medicines in your cart require a prescription to
+                    proceed.
+                  </p>
+                </div>
+              )}
+
+              {/* Clear Cart Button */}
+              <div className="flex justify-end mb-4">
+                <button
+                  onClick={handleClearCart}
+                  className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition"
+                >
+                  Clear Cart
+                </button>
+              </div>
+
+              {/* Cart Items */}
               {items.map((item) => (
                 <div
                   key={item._id}
@@ -69,6 +104,13 @@ const CartPage = () => {
                       <p className="text-sm text-teal-600 font-semibold">
                         Total: ${(item.price * item.quantity).toFixed(2)}
                       </p>
+
+                      {/* Show under item if prescription required */}
+                      {item.prescriptionRequired && (
+                        <p className="text-sm text-red-600 font-semibold">
+                          * Prescription Required
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -103,6 +145,7 @@ const CartPage = () => {
                 </div>
               ))}
 
+              {/* Total and Checkout */}
               <div className="flex justify-between items-center border-t-2 border-gray-300 pt-8 mt-12">
                 <h2 className="text-3xl font-bold text-gray-800">
                   Total: ${total.toFixed(2)}

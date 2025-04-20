@@ -7,6 +7,7 @@ interface CartItem {
   quantity: number;
   stockQuantity: number;
   image?: string;
+  prescriptionRequired?: boolean;
 }
 
 interface CartState {
@@ -26,9 +27,11 @@ const cartSlice = createSlice({
         (item) => item._id === action.payload._id
       );
       if (existingItem) {
-        if (existingItem.quantity < existingItem.stockQuantity) {
-          existingItem.quantity += action.payload.quantity;
-        }
+        const newQuantity = existingItem.quantity + action.payload.quantity;
+        existingItem.quantity = Math.min(
+          newQuantity,
+          existingItem.stockQuantity
+        );
       } else {
         state.items.push(action.payload);
       }
