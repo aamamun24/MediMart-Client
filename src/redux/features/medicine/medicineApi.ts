@@ -1,19 +1,19 @@
 
-import { TMedicine } from "@/types";
+import { IMedicine } from "@/types";
 import { baseApi } from "../../api/baseApi";
 
 // Response Types
 interface MedicineResponse {
   success: boolean;
   message: string;
-  data: TMedicine;
+  data: IMedicine;
 }
 
 interface MedicinesResponse {
   success: boolean;
   message: string;
   data: {
-    medicines: TMedicine[];
+    medicines: IMedicine[];
     meta: {
       page: number;
       limit: number;
@@ -55,9 +55,9 @@ const medicineApi = baseApi.injectEndpoints({
         if (params.limit) queryParams.append("limit", params.limit.toString());
         if (params.fields) queryParams.append("fields", params.fields);
 
-        return `/medicines?${queryParams.toString()}`;
-      },
-      providesTags: ["Medicine"],
+        console.log(`/products?${queryParams.toString()}`)
+        return `/products?${queryParams.toString()}`;
+      }
     }),
 
     // GET single medicine by ID
@@ -67,7 +67,7 @@ const medicineApi = baseApi.injectEndpoints({
     }),
 
     // CREATE a medicine
-    createMedicine: builder.mutation<MedicineResponse, Partial<TMedicine>>({
+    createMedicine: builder.mutation<MedicineResponse, Partial<IMedicine>>({
       query: (medicineData) => ({
         url: "/medicines",
         method: "POST",
@@ -79,7 +79,7 @@ const medicineApi = baseApi.injectEndpoints({
     // UPDATE a medicine
     updateMedicine: builder.mutation<
       MedicineResponse,
-      { medicineId: string; data: Partial<TMedicine> }
+      { medicineId: string; data: Partial<IMedicine> }
     >({
       query: ({ medicineId, data }) => ({
         url: `/medicines/${medicineId}`,

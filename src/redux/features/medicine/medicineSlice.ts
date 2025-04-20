@@ -9,6 +9,7 @@ export type MedicineCategory = 'Antibiotic' | 'Painkiller' | 'Antacid' | 'Antise
 export interface IMedicine {
   _id?: string; // Optional if not always set in local state
   name: string;
+  generic: string;
   brand: string;
   price: number;
   image: string;
