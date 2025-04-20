@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { removeFromCart, updateQuantity } from "@/redux/features/cartSlice";
+import { removeFromCart, updateQuantity } from "@/redux/features/cart/cartSlice";
 import Link from "next/link";
 import Image from "next/image";
 

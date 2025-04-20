@@ -1,0 +1,112 @@
+
+import { TMedicine } from "@/types";
+import { baseApi } from "../../api/baseApi";
+
+// Response Types
+interface MedicineResponse {
+  success: boolean;
+  message: string;
+  data: TMedicine;
+}
+
+interface MedicinesResponse {
+  success: boolean;
+  message: string;
+  data: {
+    medicines: TMedicine[];
+    meta: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPage: number;
+    };
+  };
+}
+
+interface DeleteResponse {
+  success: boolean;
+  message: string;
+  data: null;
+}
+
+// Query params for filtering/pagination/sorting
+interface GetAllMedicinesQueryParams {
+  search?: string;
+  filter?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  page?: number;
+  limit?: number;
+  fields?: string;
+}
+
+const medicineApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    // GET all medicines
+    getAllMedicines: builder.query<MedicinesResponse, GetAllMedicinesQueryParams>({
+      query: (params = {}) => {
+        const queryParams = new URLSearchParams();
+
+        if (params.search) queryParams.append("search", params.search);
+        if (params.filter) queryParams.append("filter", params.filter);
+        if (params.sortBy) queryParams.append("sortBy", params.sortBy);
+        if (params.sortOrder) queryParams.append("sortOrder", params.sortOrder);
+        if (params.page) queryParams.append("page", params.page.toString());
+        if (params.limit) queryParams.append("limit", params.limit.toString());
+        if (params.fields) queryParams.append("fields", params.fields);
+
+        return `/medicines?${queryParams.toString()}`;
+      },
+      providesTags: ["Medicine"],
+    }),
+
+    // GET single medicine by ID
+    getSingleMedicine: builder.query<MedicineResponse, string>({
+      query: (id) => `/medicines/${id}`,
+      providesTags: ["Medicine"],
+    }),
+
+    // CREATE a medicine
+    createMedicine: builder.mutation<MedicineResponse, Partial<TMedicine>>({
+      query: (medicineData) => ({
+        url: "/medicines",
+        method: "POST",
+        body: medicineData,
+      }),
+      invalidatesTags: ["Medicine"],
+    }),
+
+    // UPDATE a medicine
+    updateMedicine: builder.mutation<
+      MedicineResponse,
+      { medicineId: string; data: Partial<TMedicine> }
+    >({
+      query: ({ medicineId, data }) => ({
+        url: `/medicines/${medicineId}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Medicine"],
+    }),
+
+    // DELETE a medicine
+    deleteMedicine: builder.mutation<DeleteResponse, string>({
+      query: (medicineId) => ({
+        url: `/medicines/${medicineId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Medicine"],
+    }),
+  }),
+  overrideExisting: false,
+});
+
+export const {
+  useGetAllMedicinesQuery,
+  useGetSingleMedicineQuery,
+  useCreateMedicineMutation,
+  useUpdateMedicineMutation,
+  useDeleteMedicineMutation,
+} = medicineApi;
+
+export default medicineApi;

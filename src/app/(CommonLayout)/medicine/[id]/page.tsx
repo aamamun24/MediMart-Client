@@ -1,8 +1,8 @@
 "use client";
 
 import Loader from "@/components/shared/Loader";
-import { addToCart } from "@/redux/features/cartSlice";
-import { useGetSingleMedicineQuery } from "@/redux/features/medicineApi";
+import { addToCart } from "@/redux/features/cart/cartSlice";
+import { useGetSingleMedicineQuery } from "@/redux/features/medicine/medicineApi";
 import { useAppDispatch } from "@/redux/hooks";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
