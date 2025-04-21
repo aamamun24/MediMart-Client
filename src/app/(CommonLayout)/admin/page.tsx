@@ -6,7 +6,7 @@ import { IMedicine } from "@/types";
 import UpdateMedicineModal from "@/components/admin/UpdateProductModal";
 import AddMedicineModal from "@/components/admin/AddMedicineModal";
 import { useGetAllUserQuery } from "@/redux/features/user/userApi";
-import { setAllUsers, selectAllUsers, TUser } from "@/redux/features/allUsers/allUserSlice";
+import { setAllUsers, selectAllUsers } from "@/redux/features/allUsers/allUserSlice";
 import { useGetAllOrdersQuery, useUpdateOrderMutation } from "@/redux/features/order/orderApi";
 import { setOrders, selectOrders } from "@/redux/features/order/orderSlice";
 import Image from "next/image";

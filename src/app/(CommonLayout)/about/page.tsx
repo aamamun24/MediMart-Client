@@ -32,9 +32,9 @@ export default function AboutUs() {
           </div>
     
           <div className="flex flex-col justify-center text-center lg:text-left">
-            <h1 className="font-bold text-2xl underline mb-5 text-center">About MediMart</h1>
+            <h1 className="font-bold text-2xl underline mb-5 text-center">About FineMed</h1>
             <p className="max-w-3xl mx-auto lg:mx-0 px-6 font-semibold text-gray-500">
-              At MediMart, we are dedicated to providing safe, reliable, and affordable 
+              At FineMed, we are dedicated to providing safe, reliable, and affordable 
               medications to everyone. Our mission is to make healthcare accessible 
               through our trusted online pharmacy platform.
             </p>
