@@ -22,7 +22,7 @@ const Review = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get("http://localhost:5100/api/reviews");
+        const response = await axios.get("http://localhost:5000/api/reviews");
         console.log("Fetched reviews:", response.data.data);
         setReviews(response.data.data);
         setLoading(false);
@@ -53,7 +53,6 @@ const Review = () => {
   }
 
   return (
-
     <div className="container mx-auto p-4 mb-20">
       {/* testimonial title */}
       <h2 className="text-2xl md:text-3xl font-bold mb-6 border-l-4 border-[#16a085] px-4">
@@ -90,7 +89,9 @@ const Review = () => {
               <MessageSquareQuote className="text-[#16a085] mb-4 " />
               Review: {review?.reviewText}
             </p>
-            <h4 className="text-xl mb-2">by <b>{review?.userName as string}</b></h4>
+            <h4 className="text-xl mb-2">
+              by <b>{review?.userName as string}</b>
+            </h4>
             {/* client rating */}
           </SwiperSlide>
         ))}
