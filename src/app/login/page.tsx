@@ -1,7 +1,6 @@
 "use client";
 
 import { useLoginMutation } from "@/redux/features/auth/authApi";
-import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -132,32 +131,7 @@ export default function Login() {
         </div>
 
         <div className="flex flex-col space-y-3">
-          <button
-            type="button"
-            className="flex items-center justify-center px-4 py-2 text-white bg-teal-500 rounded-lg hover:bg-teal-700 transition duration-200"
-          >
-            <Image 
-              src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
-              alt="GitHub Logo" 
-              width={24} 
-              height={24} 
-              className="mr-2 rounded-full bg-white p-0.5" 
-            />
-            Login with GitHub
-          </button>
-          <button
-            type="button"
-            className="flex items-center justify-center px-4 py-2 text-white bg-teal-500 rounded-lg hover:bg-teal-700 transition duration-200"
-          >
-            <Image 
-              src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" 
-              alt="Google Logo" 
-              width={24} 
-              height={24} 
-              className="mr-2 rounded-full bg-white p-0.5" 
-            />
-            Login with Google
-          </button>
+         
         </div>
 
         <p className="text-sm text-center text-teal-600">
