@@ -4,40 +4,41 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectMedicines, setMedicines } from "@/redux/features/medicine/medicineSlice";
 import { IMedicine } from "@/types";
 import UpdateMedicineModal from "@/components/admin/UpdateProductModal";
+import AddMedicineModal from "@/components/admin/AddMedicineModal";
 import { useGetAllUserQuery } from "@/redux/features/user/userApi";
-import { setAllUsers, selectAllUsers } from "@/redux/features/allUsers/allUserSlice";
+import { setAllUsers, selectAllUsers, TUser } from "@/redux/features/allUsers/allUserSlice";
 import { useGetAllOrdersQuery, useUpdateOrderMutation } from "@/redux/features/order/orderApi";
 import { setOrders, selectOrders } from "@/redux/features/order/orderSlice";
 import Image from "next/image";
 import Link from "next/link";
 import { useGetAllMedicinesQuery } from "@/redux/features/medicine/medicineApi";
+import { toast, Toaster } from "sonner";
 
 const MedicineAdminDashboard = () => {
   const dispatch = useDispatch();
-
-  // Medicines
   const medicines = useSelector(selectMedicines);
   const [selectedMedicine, setSelectedMedicine] = useState<IMedicine | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: medicinesData } = useGetAllMedicinesQuery({});
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const { data: medicinesData, refetch } = useGetAllMedicinesQuery({});
 
   // Users
   const { data: allUsersRes } = useGetAllUserQuery();
   const allUsers = useSelector(selectAllUsers);
 
   // Orders API
-  const { data: ordersData, refetch } = useGetAllOrdersQuery();
+  const { data: ordersData, refetch: refetchOrders } = useGetAllOrdersQuery();
   const [updateOrder, { isLoading: updateLoading, error: updateError }] = useUpdateOrderMutation();
 
   // Compute order counts for all users
   const orders = useSelector(selectOrders);
   const orderCounts = allUsers.reduce((acc, user) => {
-    const userOrders = orders.filter(order => order.userEmail === user.email);
+    const userOrders = orders.filter((order) => order.userEmail === user.email);
     acc[user._id] = userOrders.length;
     return acc;
   }, {} as Record<string, number>);
 
-  // Set medicines and users in store
+  // Set medicines, users, and orders in store
   useEffect(() => {
     if (allUsersRes?.data) {
       dispatch(setAllUsers(allUsersRes.data as TUser[]));
@@ -63,6 +64,11 @@ const MedicineAdminDashboard = () => {
     }
   }, [ordersData, dispatch]);
 
+  // Refetch medicines when Redux medicines change
+  useEffect(() => {
+    refetch();
+  }, [medicines, refetch]);
+
   const handleUpdateMedicine = (medicine: IMedicine) => {
     setSelectedMedicine(medicine);
     setIsModalOpen(true);
@@ -73,14 +79,22 @@ const MedicineAdminDashboard = () => {
     setSelectedMedicine(null);
   };
 
+  const closeAddMedicineModal = () => {
+    setIsAddModalOpen(false);
+  };
+
   // Function to handle status change and update the order
-  const handleStatusChange = async (orderId: string, newStatus: "pending" | "processing" | "shipped" | "delivered") => {
+  const handleStatusChange = async (
+    orderId: string,
+    newStatus: "pending" | "processing" | "shipped" | "delivered"
+  ) => {
     try {
       await updateOrder({ orderId, data: { status: newStatus } }).unwrap();
+      toast.success(`Order status updated to ${newStatus}`);
       console.log(`Order ${orderId} status updated to ${newStatus}`);
-      // Refetch orders to ensure cache is updated
-      await refetch();
+      await refetchOrders();
     } catch (error) {
+      toast.error("Failed to update order status");
       console.error("Error updating status:", error);
     }
   };
@@ -88,20 +102,39 @@ const MedicineAdminDashboard = () => {
   const statusOptions = ["pending", "processing", "shipped", "delivered"] as const;
 
   return (
-    <div className="min-h-screen p-6 mt-24 space-y-12">
+    <div className="min-h-screen p-6 mt-24 space-y-12 mb-10">
+      <Toaster richColors position="top-center" />
       {/* 🟦 Medicines Table */}
       <div>
         <h1 className="text-3xl font-bold text-gray-700 text-center mb-8">All Medicines</h1>
+        <div className="flex my-2 justify-center">
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="bg-amber-200 p-2 rounded-md"
+          >
+            Add Medicine
+          </button>
+        </div>
         {medicines && medicines.length > 0 ? (
           <div className="overflow-x-auto shadow-md rounded-lg border border-gray-200">
             <table className="min-w-full bg-white table-fixed">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Name</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Brand</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Quantity</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Price</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Name
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Brand
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Quantity
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Price
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -137,11 +170,21 @@ const MedicineAdminDashboard = () => {
             <table className="min-w-full bg-white table-fixed">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Name</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Email</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Phone</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Address</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Total Orders</th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Name
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Email
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Phone
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Address
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Total Orders
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -170,11 +213,21 @@ const MedicineAdminDashboard = () => {
             <table className="min-w-full bg-white table-fixed">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">User Email</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">User Phone</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Products</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Prescription (Click to open)</th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">Status</th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    User Email
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font Düfte-semibold text-gray-700">
+                    User Phone
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Products
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Prescription (Click to open)
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -184,10 +237,13 @@ const MedicineAdminDashboard = () => {
                     <td className="py-3 px-4 text-sm text-gray-600">{order.contactNumber}</td>
                     <td className="py-3 px-4 text-sm text-gray-600">
                       {order?.products?.map((product, index) => {
-                        const productName = medicines.find(m => m._id === product.productId)?.name || "Unknown";
+                        const productName =
+                          medicines.find((m) => m._id === product.productId)?.name || "Unknown";
                         return (
                           <div key={`${order._id}-${index}`}>
-                            <p>{productName} X {product.quantity}</p>
+                            <p>
+                              {productName} <b>X{product.quantity}</b>
+                            </p>
                           </div>
                         );
                       })}
@@ -198,9 +254,10 @@ const MedicineAdminDashboard = () => {
                           <Image
                             src={order.prescriptionImageLink}
                             alt="Prescription"
-                            objectFit="cover"
+                            style={{ objectFit: "cover" }}
                             height={30}
                             width={40}
+                            className="border-2 border-black h-10 w-10 rounded-sm"
                           />
                         </Link>
                       ) : (
@@ -211,17 +268,20 @@ const MedicineAdminDashboard = () => {
                       <select
                         value={order.status}
                         onChange={(e) =>
-                          handleStatusChange(order._id, e.target.value as "pending" | "processing" | "shipped" | "delivered")
+                          handleStatusChange(
+                            order._id,
+                            e.target.value as "pending" | "processing" | "shipped" | "delivered"
+                          )
                         }
                         disabled={updateLoading}
                         className={`px-2 py-1 rounded text-sm border-gray-300 focus:ring-2 focus:ring-blue-500 ${
                           order.status === "pending"
                             ? "bg-yellow-100 text-yellow-800"
                             : order.status === "processing"
-                            ? "bg-blue-100 text-blue-800"
-                            : order.status === "shipped"
-                            ? "bg-gray-100 text-gray-800"
-                            : "bg-green-100 text-green-800"
+                              ? "bg-blue-100 text-blue-800"
+                              : order.status === "shipped"
+                                ? "bg-gray-100 text-gray-800"
+                                : "bg-green-100 text-green-800"
                         }`}
                       >
                         {statusOptions.map((status) => (
@@ -245,11 +305,9 @@ const MedicineAdminDashboard = () => {
       </div>
 
       {isModalOpen && selectedMedicine && (
-        <UpdateMedicineModal
-          onClose={closeUpdateMedicineModal}
-          medicine={selectedMedicine}
-        />
+        <UpdateMedicineModal onClose={closeUpdateMedicineModal} medicine={selectedMedicine} />
       )}
+      {isAddModalOpen && <AddMedicineModal onClose={closeAddMedicineModal} />}
     </div>
   );
 };
