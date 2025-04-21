@@ -1,4 +1,3 @@
-
 import { IMedicine } from "@/types";
 import { baseApi } from "../../api/baseApi";
 

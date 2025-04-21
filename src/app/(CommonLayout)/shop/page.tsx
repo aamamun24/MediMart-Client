@@ -33,6 +33,7 @@ const AllMedicinesPage = () => {
 
   useEffect(() => {
     if (data?.data) {
+      console.log(data)
       const medicinesArray = Array.isArray(data.data)
         ? data.data
         : data.data.medicines;

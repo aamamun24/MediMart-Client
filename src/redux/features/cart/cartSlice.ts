@@ -10,7 +10,7 @@ interface CartItem {
   prescriptionRequired?: boolean;
 }
 
-interface CartState {
+export interface CartState {
   items: CartItem[];
 }
 

@@ -1,17 +1,59 @@
 "use client";
-// Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
-// import required modules
 import { Pagination } from "swiper/modules";
-
-import { clientReview } from "./Review.json";
 import { MessageSquareQuote } from "lucide-react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+interface Review {
+  id: string;
+  reviewText: string;
+  userName: string;
+  userEmail: number;
+}
 
 const Review = () => {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get("http://localhost:5100/api/reviews");
+        console.log("Fetched reviews:", response.data.data);
+        setReviews(response.data.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+        setError("Failed to load reviews. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4 mb-20 text-center">
+        <p className="text-gray-600">Loading reviews...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-4 mb-20 text-center">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
   return (
+
     <div className="container mx-auto p-4 mb-20">
       {/* testimonial title */}
       <h2 className="text-2xl md:text-3xl font-bold mb-6 border-l-4 border-[#16a085] px-4">
@@ -37,28 +79,19 @@ const Review = () => {
         }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
       >
-        {/* client riview card */}
-        {clientReview.map((review) => (
+        {/* client review card */}
+        {reviews.map((review) => (
           <SwiperSlide
             className="p-4 rounded-lg shadow-md bg-white mb-12 h-20"
             key={review?.id}
           >
             {/* client review */}
-            <p className="mb-4 text-sm">
-              <MessageSquareQuote className="text-[#16a085] mb-4" />
-              Review:{review?.review}
+            <p className="mb-4  text-2xl">
+              <MessageSquareQuote className="text-[#16a085] mb-4 " />
+              Review: {review?.reviewText}
             </p>
-            <h4 className="text-xl mb-2">Name:{review?.name}</h4>
+            <h4 className="text-xl mb-2">by <b>{review?.userName as string}</b></h4>
             {/* client rating */}
-            <p className="mb-2">
-              <span className="text-yellow-500 ml-2 flex">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <span key={index}>{index < review.rating ? "★" : "☆"}</span>
-                ))}
-              </span>
-            </p>
-            {/* rating date */}
-            <p className="mb-2">Date:{review?.date}</p>
           </SwiperSlide>
         ))}
       </Swiper>
