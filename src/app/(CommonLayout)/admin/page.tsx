@@ -165,6 +165,7 @@ const MedicineAdminDashboard = () => {
       {/* 🟩 Users Table */}
       <div>
         <h2 className="text-3xl font-bold text-gray-700 text-center mb-8">All Users</h2>
+
         {allUsers && allUsers.length > 0 ? (
           <div className="overflow-x-auto shadow-md rounded-lg border border-gray-200">
             <table className="min-w-full bg-white table-fixed">
@@ -208,6 +209,8 @@ const MedicineAdminDashboard = () => {
       {/* 🟧 Orders Table */}
       <div>
         <h2 className="text-3xl font-bold text-gray-700 text-center mb-8">All Orders</h2>
+        <h3 className="text-center text-red-900">Automatically updates from <b className="text-red-700">Pending</b> to <b className="text-red-700">Processing</b> if payment is complete</h3>
+        <h3 className="text-center text-red-900">Only proceed further to update orders if <b className="text-red-700">prescription</b> checked and verified</h3>
         {ordersData?.data && ordersData?.data.length > 0 ? (
           <div className="overflow-x-auto shadow-md rounded-lg border border-gray-200">
             <table className="min-w-full bg-white table-fixed">

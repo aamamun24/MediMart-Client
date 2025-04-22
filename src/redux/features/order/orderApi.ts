@@ -1,8 +1,9 @@
+import { IOrderData } from "@/app/(CommonLayout)/checkout/page";
 import { baseApi } from "../../api/baseApi"; // Adjust path
-import { TProduct } from "./orderSlice";
 
 type TOrder = {
   _id: string
+  PaymentGatewayPageURL?: string
   userName: string;
   userEmail: string;
   products: {
@@ -44,7 +45,7 @@ interface DeleteResponse {
 const orderApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Create a new order (POST /orders/)
-    createOrder: builder.mutation<OrderResponse, { userEmail: string; products: TProduct; totalPrice: number; address: string; contactNumber: string }>({
+    createOrder: builder.mutation<OrderResponse, IOrderData>({
       query: (orderData) => ({
         url: "/orders",
         method: "POST",

@@ -4,7 +4,7 @@ import { RootState } from "../store"; // Adjust path if necessary
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/api",
+    baseUrl: "http://localhost:5100/api",
     credentials: "include", // Include cookies if your API uses sessions
     prepareHeaders: (headers, { getState }) => {
       const token =

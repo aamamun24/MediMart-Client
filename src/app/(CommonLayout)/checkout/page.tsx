@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -6,27 +7,51 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { clearCart } from "@/redux/features/cart/cartSlice";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
+import { useCreateOrderMutation } from "@/redux/features/order/orderApi";
+import { postImage } from "@/utils/postImage";
+
+// Define TProduct to match orderApi expectation
+type TProduct = { productId: string; quantity: number }[];
+
+export interface IOrderData {
+  userName: string;
+  userEmail: string;
+  products: TProduct;
+  totalPrice: number;
+  address: string;
+  contactNumber: string;
+  prescriptionImageLink?: string;
+  paymentMethod: "cashOnDelivery" | "sslcommerz";
+}
 
 const CheckoutPage = () => {
   const { items } = useAppSelector((state) => state.cart);
+  const authUser = useAppSelector(selectCurrentUser);
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [prescription, setPrescription] = useState<File | null>(null);
-  const [prescriptionRequired, setPrescriptionRequired] = useState(false);
+  const [prescriptionRequiredState, setPrescriptionRequiredState] = useState(false);
 
   const total = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
 
+  if(error){
+    toast(`${error}`)
+  }
+
   useEffect(() => {
     const needPrescription = items.some((item) => item.prescriptionRequired);
-    setPrescriptionRequired(needPrescription);
+    setPrescriptionRequiredState(needPrescription);
   }, [items]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,66 +60,111 @@ const CheckoutPage = () => {
     }
   };
 
-  const createOrder = async (paymentStatus: "Paid" | "Unpaid") => {
-    try {
-      const orderData = {
-        name,
-        address,
-        phone,
-        paymentMethod,
-        paymentStatus,
-        items,
-        totalPrice: total,
-        prescription: prescription ? prescription.name : null,
-      };
-
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
-      });
-
-      if (!res.ok) throw new Error("Failed to create order");
-      const data = await res.json();
-      return data;
-    } catch (error) {
-      console.error(error);
-      toast.error("Order creation failed!");
-      throw error;
-    }
-  };
-
   const handleCODOrder = async () => {
+    if (!authUser?.userEmail) {
+      toast.error("Please log in to place an order");
+      return;
+    }
     if (!name || !address || !phone) {
       toast.error("Please fill all shipping details.");
       return;
     }
-    if (prescriptionRequired && !prescription) {
+    if (prescriptionRequiredState && !prescription) {
       toast.error("Prescription is required.");
       return;
     }
 
+    let prescriptionImageLink: string | undefined;
+    if (prescription) {
+      try {
+        prescriptionImageLink = await postImage(prescription);
+      } catch (error) {
+        toast.error((error as Error).message || "Failed to upload prescription image");
+        return;
+      }
+    }
+
+    const IOrderData: IOrderData = {
+      userName: name,
+      userEmail: authUser.userEmail,
+      products: items
+        .filter((item) => item._id)
+        .map((item) => ({
+          productId: item._id!,
+          quantity: item.quantity,
+        })),
+      totalPrice: total,
+      address,
+      contactNumber: phone,
+      prescriptionImageLink,
+      paymentMethod: "cashOnDelivery",
+    };
+
+    // Console log order details
+    console.log("Order Details (COD):", IOrderData);
+
     try {
-      await createOrder("Unpaid");
-      dispatch(clearCart());
-      toast.success("Order placed successfully!");
-      router.push("/orders");
+      const result = await createOrder(IOrderData).unwrap();
+      if (result.success) {
+        dispatch(clearCart());
+        toast.success("Order placed successfully!");
+        router.push("/orders");
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to create order:", error);
+      toast.error("Order creation failed!");
     }
   };
 
   const handleOnlinePayment = async () => {
+    if (!authUser?.userEmail) {
+      toast.error("Please log in to place an order");
+      return;
+    }
     if (!name || !address || !phone) {
       toast.error("Please fill all shipping details.");
       return;
     }
-    if (prescriptionRequired && !prescription) {
+    if (prescriptionRequiredState && !prescription) {
       toast.error("Prescription is required.");
       return;
     }
 
+    let prescriptionImageLink: string | undefined;
+    if (prescription) {
+      try {
+        prescriptionImageLink = await postImage(prescription);
+      } catch (error) {
+        toast.error((error as Error).message || "Failed to upload prescription image");
+        return;
+      }
+    }
+
+    const IOrderData: IOrderData = {
+      userName: name,
+      userEmail: authUser.userEmail,
+      products: items
+        .filter((item) => item._id)
+        .map((item) => ({
+          productId: item._id!,
+          quantity: item.quantity,
+        })),
+      totalPrice: total,
+      address,
+      contactNumber: phone,
+      prescriptionImageLink,
+      paymentMethod: "sslcommerz",
+    };
+
+    // Console log order details
+    console.log("Order Details (Online Payment):", IOrderData);
+
     try {
+      const result = await createOrder(IOrderData).unwrap();
+      if (!result.success) {
+        throw new Error("Order creation failed");
+      }
+
       const res = await fetch("/api/ssl-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -109,12 +179,14 @@ const CheckoutPage = () => {
 
       const data = await res.json();
       if (data?.GatewayPageURL) {
-        window.location.href = data.GatewayPageURL;
+        dispatch(clearCart());
+        const transactionId = result.data.transactionId || crypto.randomUUID();
+        router.push(`/payment-success/${transactionId}`);
       } else {
         throw new Error("SSLCommerz session creation failed");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to create order or initiate payment:", error);
       toast.error("Payment initiation failed!");
     }
   };
@@ -162,7 +234,7 @@ const CheckoutPage = () => {
                   >
                     <div className="relative w-16 h-16">
                       <Image
-                        src={item.image!}
+                        src={item.image || "/placeholder.png"}
                         alt={item.name}
                         layout="fill"
                         objectFit="cover"
@@ -198,15 +270,17 @@ const CheckoutPage = () => {
                 <button
                   onClick={handleCODOrder}
                   className="w-full mt-6 bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-lg text-lg font-semibold"
+                  disabled={isLoading}
                 >
-                  Confirm Order
+                  {isLoading ? "Processing..." : "Confirm Order"}
                 </button>
               ) : (
                 <button
                   onClick={handleOnlinePayment}
                   className="w-full mt-6 bg-teal-700 hover:bg-teal-800 text-white py-3 rounded-lg text-lg font-semibold"
+                  disabled={isLoading}
                 >
-                  Pay with SSLCommerz
+                  {isLoading ? "Processing..." : "Pay with SSLCommerz"}
                 </button>
               )}
             </div>
@@ -240,9 +314,8 @@ const CheckoutPage = () => {
                 />
                 <div>
                   <label className="block mb-2 font-medium">
-                    {prescriptionRequired
-                      ? "Upload Prescription (Required)"
-                      : "Upload Prescription (Optional)"}
+                    Upload Prescription (
+                    {prescriptionRequiredState ? "Required" : "Optional"})
                   </label>
                   <input
                     type="file"
