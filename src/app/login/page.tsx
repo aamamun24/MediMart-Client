@@ -50,7 +50,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex flex-col justify-center items-center min-h-[70vh] bg-gray-100">
        <Link href="/">
               <h3 className="text-3xl font-bold text-gray-500 mb-5">
                 <span className="text-[#16a085]">Fine</span>Med

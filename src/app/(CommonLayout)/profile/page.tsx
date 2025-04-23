@@ -87,7 +87,7 @@ const UserDashboard = () => {
 
   if (!authUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[70vh] flex items-center justify-center">
         <p>Please log in to view your dashboard.</p>
       </div>
     );
@@ -95,7 +95,7 @@ const UserDashboard = () => {
 
   if (isLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[70vh] flex items-center justify-center">
         <p>Loading user data...</p>
       </div>
     );
@@ -103,7 +103,7 @@ const UserDashboard = () => {
 
   if (isError || error) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-red-500">
+      <div className="min-h-[70vh] flex items-center justify-center text-red-500">
         Error: {(queryError as any)?.data?.message || error}
       </div>
     );
@@ -111,7 +111,7 @@ const UserDashboard = () => {
 
   if (ordersLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[70vh] flex items-center justify-center">
         <p>Loading your orders...</p>
       </div>
     );
@@ -119,7 +119,7 @@ const UserDashboard = () => {
 
   if (ordersError) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-red-500">
+      <div className="min-h-[70vh] flex items-center justify-center text-red-500">
         Error:{" "}
         {(ordersQueryError as any)?.data?.message || "Failed to fetch orders."}
       </div>

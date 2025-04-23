@@ -119,7 +119,7 @@ const MedicineAdminDashboard = () => {
   const statusOptions = ["pending", "processing", "shipped", "delivered"] as const;
 
   return (
-    <div className="min-h-screen p-6 mt-24 space-y-12 mb-10">
+    <div className="min-h-[70vh] p-6 mt-24 space-y-12 mb-10">
       <Toaster richColors position="top-center" />
       {/* 🟦 Medicines Table */}
       <div>

@@ -211,7 +211,7 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen py-10">
+    <div className="bg-gray-100 min-h-[70vh] py-10">
       <div className="max-w-7xl mx-auto px-4">
         <div className="bg-white shadow-xl rounded-xl p-8">
           <h1 className="text-3xl font-bold text-center text-teal-700 mb-8">
