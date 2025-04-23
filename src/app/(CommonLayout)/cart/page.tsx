@@ -12,7 +12,7 @@ const CartPage = () => {
   const handleQuantityChange = (id: string, newQuantity: number) => {
     const item = items.find((item) => item._id === id);
     if (item) {
-      if (newQuantity > 0 && newQuantity <= item.stockQuantity) {
+      if (newQuantity > 0 && newQuantity <= (item.stockQuantity || 99)) {
         dispatch(updateQuantity({ id, quantity: newQuantity }));
       }
     }
@@ -26,12 +26,12 @@ const CartPage = () => {
     dispatch(clearCart());
   };
 
+  // Safe calculation of total with fallback for price
   const total = items.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+    (acc, item) => acc + (item.price || 0) * (item.quantity || 0),
     0
   );
 
-  // 👉 Define prescriptionRequired correctly
   const prescriptionRequired = items.some((item) => item.prescriptionRequired);
 
   return (
@@ -54,17 +54,14 @@ const CartPage = () => {
             </div>
           ) : (
             <div className="space-y-8">
-              {/* 👉 Top warning if prescription needed */}
               {prescriptionRequired && (
                 <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6">
                   <p className="font-semibold">
-                    Some medicines in your cart require a prescription to
-                    proceed.
+                    Some medicines in your cart require a prescription to proceed.
                   </p>
                 </div>
               )}
 
-              {/* Clear Cart Button */}
               <div className="flex justify-end mb-4">
                 <button
                   onClick={handleClearCart}
@@ -74,74 +71,78 @@ const CartPage = () => {
                 </button>
               </div>
 
-              {/* Cart Items */}
-              {items.map((item) => (
-                <div
-                  key={item._id}
-                  className="bg-white shadow-lg rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6"
-                >
-                  <div className="flex items-center gap-6 w-full md:w-2/3">
-                    <div className="relative w-24 h-24 rounded-lg overflow-hidden border-2 border-gray-200">
-                      <Image
-                        src={item.image!}
-                        alt={item.name}
-                        layout="fill"
-                        objectFit="cover"
-                        priority
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <h2 className="text-2xl font-semibold text-gray-800">
-                        {item.name}
-                      </h2>
-                      <p className="text-sm text-gray-500">
-                        Unit Price: ${item.price.toFixed(2)}
-                      </p>
-                      <p className="text-sm text-teal-600 font-semibold">
-                        Total: ${(item.price * item.quantity).toFixed(2)}
-                      </p>
+              {items.map((item) => {
+                // Safe price calculation with fallback
+                const price = item.price || 0;
+                const quantity = item.quantity || 0;
+                const totalPrice = price * quantity;
 
-                      {/* Show under item if prescription required */}
-                      {item.prescriptionRequired && (
-                        <p className="text-sm text-red-600 font-semibold">
-                          * Prescription Required
+                return (
+                  <div
+                    key={item._id}
+                    className="bg-white shadow-lg rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6"
+                  >
+                    <div className="flex items-center gap-6 w-full md:w-2/3">
+                      <div className="relative w-24 h-24 rounded-lg overflow-hidden border-2 border-gray-200">
+                        <Image
+                          src={item.image || "/default-medicine.jpg"}
+                          alt={item.name || "Medicine"}
+                          layout="fill"
+                          objectFit="cover"
+                          priority
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <h2 className="text-2xl font-semibold text-gray-800">
+                          {item.name || "Unknown Product"}
+                        </h2>
+                        <p className="text-sm text-gray-500">
+                          Unit Price: ${price.toFixed(2)}
                         </p>
-                      )}
-                    </div>
-                  </div>
+                        <p className="text-sm text-teal-600 font-semibold">
+                          Total: ${totalPrice.toFixed(2)}
+                        </p>
 
-                  <div className="flex items-center gap-6">
-                    <div className="flex flex-col items-center">
-                      <label
-                        htmlFor={`quantity-${item._id}`}
-                        className="text-sm text-gray-700 mb-2 font-semibold"
+                        {item.prescriptionRequired && (
+                          <p className="text-sm text-red-600 font-semibold">
+                            * Prescription Required
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-6">
+                      <div className="flex flex-col items-center">
+                        <label
+                          htmlFor={`quantity-${item._id}`}
+                          className="text-sm text-gray-700 mb-2 font-semibold"
+                        >
+                          Quantity
+                        </label>
+                        <input
+                          id={`quantity-${item._id}`}
+                          type="number"
+                          min="1"
+                          max={item.stockQuantity || 99}
+                          value={quantity}
+                          onChange={(e) =>
+                            handleQuantityChange(item._id, Number(e.target.value))
+                          }
+                          className="w-24 text-center rounded-lg border-2 border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                        />
+                      </div>
+
+                      <button
+                        onClick={() => handleRemove(item._id)}
+                        className="bg-red-500 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition"
                       >
-                        Quantity
-                      </label>
-                      <input
-                        id={`quantity-${item._id}`}
-                        type="number"
-                        min="1"
-                        max={item.stockQuantity || 99}
-                        value={item.quantity}
-                        onChange={(e) =>
-                          handleQuantityChange(item._id, Number(e.target.value))
-                        }
-                        className="w-24 text-center rounded-lg border-2 border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
-                      />
+                        Remove
+                      </button>
                     </div>
-
-                    <button
-                      onClick={() => handleRemove(item._id)}
-                      className="bg-red-500 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition"
-                    >
-                      Remove
-                    </button>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
-              {/* Total and Checkout */}
               <div className="flex justify-between items-center border-t-2 border-gray-300 pt-8 mt-12">
                 <h2 className="text-3xl font-bold text-gray-800">
                   Total: ${total.toFixed(2)}

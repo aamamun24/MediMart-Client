@@ -3,13 +3,13 @@ import { IMedicine } from "@/types";
 import { baseApi } from "../../api/baseApi";
 
 // Response Types
-interface MedicineResponse {
+export interface MedicineResponse {
   success: boolean;
   message: string;
   data: IMedicine;
 }
 
-interface MedicinesResponse {
+export interface MedicinesResponse {
   success: boolean;
   message: string;
   data: {
@@ -23,14 +23,14 @@ interface MedicinesResponse {
   };
 }
 
-interface DeleteResponse {
+export interface DeleteResponse {
   success: boolean;
   message: string;
   data: null;
 }
 
 // Query params for filtering/pagination/sorting
-interface GetAllMedicinesQueryParams {
+export interface GetAllMedicinesQueryParams {
   search?: string;
   filter?: string;
   sortBy?: string;

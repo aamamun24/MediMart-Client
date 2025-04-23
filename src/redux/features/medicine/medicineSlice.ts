@@ -51,4 +51,4 @@ export const { setMedicines } = medicineSlice.actions;
 export default medicineSlice.reducer;
 
 // Selector
-export const selectMedicines = (state: RootState) => state.medicines.medicines;
+export const selectMedicines = (state: RootState) => state.medicines;

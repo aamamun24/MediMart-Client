@@ -11,7 +11,7 @@ import Logo from "./Logo";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#09192c] border-b-2 border-white py-6">
+    <footer className="bg-[#09192c] py-6">
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* logo inner */}
