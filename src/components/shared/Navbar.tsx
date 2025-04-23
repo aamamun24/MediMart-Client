@@ -4,17 +4,38 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
+import { useSelector, useDispatch } from "react-redux";
+import { selectCurrentUser, logout } from "@/redux/features/auth/authSlice";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const { items } = useAppSelector((state) => state.cart);
   const cartItems = items.length;
+  const user = useSelector(selectCurrentUser);
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    toast("✅ Logged Out");
+    setMenuOpen(false);
+  };
 
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/shop", label: "Shop" },
+    { href: "/cart", label: "Cart" },
+    { href: "/checkout", label: "Checkout" },
     { href: "/about", label: "About" },
+    { href: "/review", label: "Reviews" },
+    ...(user
+      ? [
+          user.role === "admin"
+            ? { href: "/admin", label: "Dashboard" }
+            : { href: "/profile", label: "Profile" },
+        ]
+      : []),
   ];
 
   return (
@@ -45,45 +66,37 @@ const Navbar = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-md font-medium ${
+                className={`relative text-md font-medium ${
                   pathname === link.href
                     ? "text-teal-600 border-b-2 border-teal-600"
                     : "text-gray-700 hover:text-teal-600"
                 }`}
               >
                 {link.label}
+                {link.href === "/cart" && cartItems > 0 && (
+                  <span className="absolute -top-2 -right-4 bg-teal-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItems}
+                  </span>
+                )}
               </Link>
             ))}
 
-            {/* Cart */}
-            <Link href="/cart" className="relative flex items-center">
-              <svg
-                className="h-6 w-6 text-gray-700 hover:text-teal-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+            {/* Auth Button */}
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="ml-4 px-4 py-2 font-bold  bg-red-700 text-white rounded-md hover:bg-red-900 transition text-sm"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.2 6h12.4M7 13L5.4 5M16 17a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-              {cartItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-teal-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartItems}
-                </span>
-              )}
-            </Link>
-
-            {/* Login */}
-            <Link
-              href="/login"
-              className="ml-4 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition text-sm font-medium"
-            >
-              Login
-            </Link>
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="ml-4 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition text-sm font-medium"
+              >
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -142,24 +155,26 @@ const Navbar = () => {
                 }`}
               >
                 {link.label}
+                {link.href === "/cart" && cartItems > 0 && ` (${cartItems})`}
               </Link>
             ))}
 
-            <Link
-              href="/cart"
-              onClick={() => setMenuOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-teal-100 hover:text-teal-800"
-            >
-              Cart ({cartItems})
-            </Link>
-
-            <Link
-              href="/login"
-              onClick={() => setMenuOpen(false)}
-              className="block px-3 py-2 mt-2 bg-teal-600 text-white rounded-md text-base text-center hover:bg-teal-700"
-            >
-              Login
-            </Link>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="font-bold block px-3 py-2 mt-2 bg-red-900 text-white rounded-md text-base text-center hover:bg-red-900"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="block px-3 py-2 mt-2 bg-teal-600 text-white rounded-md text-base text-center hover:bg-teal-700"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       )}

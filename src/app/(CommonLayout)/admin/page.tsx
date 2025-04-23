@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +13,7 @@ import { setOrders, selectOrders } from "@/redux/features/order/orderSlice";
 import Image from "next/image";
 import Link from "next/link";
 import { useGetAllMedicinesQuery } from "@/redux/features/medicine/medicineApi";
+import { useGetAllReviewsQuery, useDeleteReviewByIdMutation } from "@/redux/features/review/reviewApi";
 import { toast, Toaster } from "sonner";
 
 const MedicineAdminDashboard = () => {
@@ -29,6 +31,10 @@ const MedicineAdminDashboard = () => {
   // Orders API
   const { data: ordersData, refetch: refetchOrders } = useGetAllOrdersQuery();
   const [updateOrder, { isLoading: updateLoading, error: updateError }] = useUpdateOrderMutation();
+
+  // Reviews API
+  const { data: reviewsData, isLoading: reviewsLoading, refetch: refetchReviews } = useGetAllReviewsQuery();
+  const [deleteReviewById, { isLoading: deleteLoading }] = useDeleteReviewByIdMutation();
 
   // Compute order counts for all users
   const orders = useSelector(selectOrders);
@@ -60,7 +66,6 @@ const MedicineAdminDashboard = () => {
   useEffect(() => {
     if (ordersData?.data) {
       dispatch(setOrders(ordersData.data));
-      console.log("Orders data:", ordersData);
     }
   }, [ordersData, dispatch]);
 
@@ -96,6 +101,18 @@ const MedicineAdminDashboard = () => {
     } catch (error) {
       toast.error("Failed to update order status");
       console.error("Error updating status:", error);
+    }
+  };
+
+  // Function to handle review deletion
+  const handleDeleteReview = async (reviewId: string) => {
+    try {
+      await deleteReviewById(reviewId).unwrap();
+      toast.success("Review deleted successfully");
+      await refetchReviews();
+    } catch (error) {
+      toast.error("Failed to delete review");
+      console.error("Error deleting review:", error);
     }
   };
 
@@ -165,6 +182,7 @@ const MedicineAdminDashboard = () => {
       {/* 🟩 Users Table */}
       <div>
         <h2 className="text-3xl font-bold text-gray-700 text-center mb-8">All Users</h2>
+
         {allUsers && allUsers.length > 0 ? (
           <div className="overflow-x-auto shadow-md rounded-lg border border-gray-200">
             <table className="min-w-full bg-white table-fixed">
@@ -208,6 +226,8 @@ const MedicineAdminDashboard = () => {
       {/* 🟧 Orders Table */}
       <div>
         <h2 className="text-3xl font-bold text-gray-700 text-center mb-8">All Orders</h2>
+        <h3 className="text-center text-red-900">Automatically updates from <b className="text-red-700">Pending</b> to <b className="text-red-700">Processing</b> if payment is complete</h3>
+        <h3 className="text-center text-red-900">Only proceed further to update orders if <b className="text-red-700">prescription</b> checked and verified</h3>
         {ordersData?.data && ordersData?.data.length > 0 ? (
           <div className="overflow-x-auto shadow-md rounded-lg border border-gray-200">
             <table className="min-w-full bg-white table-fixed">
@@ -216,7 +236,7 @@ const MedicineAdminDashboard = () => {
                   <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
                     User Email
                   </th>
-                  <th className="w-1/5 py-3 px-4 text-left text-sm font Düfte-semibold text-gray-700">
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
                     User Phone
                   </th>
                   <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
@@ -232,7 +252,7 @@ const MedicineAdminDashboard = () => {
               </thead>
               <tbody>
                 {ordersData.data.map((order) => (
-                  <tr key={order.transactionId} className="border-b hover:bg-gray-50">
+                  <tr key={order._id} className="border-b hover:bg-gray-50">
                     <td className="py-3 px-4 text-sm text-gray-600">{order.userEmail}</td>
                     <td className="py-3 px-4 text-sm text-gray-600">{order.contactNumber}</td>
                     <td className="py-3 px-4 text-sm text-gray-600">
@@ -301,6 +321,61 @@ const MedicineAdminDashboard = () => {
           </div>
         ) : (
           <p className="text-center text-gray-500 mt-4">No orders found.</p>
+        )}
+      </div>
+
+      {/* 🟪 Reviews Table */}
+      <div>
+        <h2 className="text-3xl font-bold text-gray-700 text-center mb-8">All Reviews</h2>
+        {reviewsLoading ? (
+          <p className="text-center text-gray-500 mt-4">Loading reviews...</p>
+        ) : reviewsData?.data && reviewsData.data.length > 0 ? (
+          <div className="overflow-x-auto shadow-md rounded-lg border border-gray-200">
+            <table className="min-w-full bg-white table-fixed">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    User Email
+                  </th>
+                  <th className="w-2/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Review
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Star Count
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Order Count
+                  </th>
+                  <th className="w-1/5 py-3 px-4 text-left text-sm font-semibold text-gray-700">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {reviewsData.data.map((review) => (
+                  <tr key={review._id} className="border-b hover:bg-gray-50">
+                    <td className="py-3 px-4 text-sm text-gray-600">{review.userEmail}</td>
+                    <td className="py-3 px-4 text-sm text-gray-600">{review.reviewText}</td>
+                    <td className="py-3 px-4 text-sm text-gray-600">{review.starCount}</td>
+                    <td className="py-3 px-4 text-sm text-gray-600">{review.orderCount}</td>
+                    <td className="py-3 px-4">
+                      <button
+                        onClick={() => handleDeleteReview(review._id)}
+                        disabled={deleteLoading}
+                        className={`bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition ${
+                          deleteLoading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-center text-gray-500 mt-4">No reviews found.</p>
         )}
       </div>
 

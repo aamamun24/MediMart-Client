@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 
 // Define the User interface
-export interface User {
+export interface IUser {
   name: string;
   email: string;
   address: string;
@@ -11,7 +11,7 @@ export interface User {
 
 // Define the state type
 export type TUserState = {
-  user: User | null;
+  user: IUser | null;
   loading: boolean;
   error: string | null;
 };
@@ -28,7 +28,7 @@ const userSlice = createSlice({
   name: "user", // still named user
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User>) => {
+    setUser: (state, action: PayloadAction<IUser>) => {
       state.user = action.payload;
       state.loading = false;
       state.error = null;
