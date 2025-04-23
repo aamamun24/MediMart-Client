@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -108,7 +107,6 @@ const CheckoutPage = () => {
       if (result.success) {
         dispatch(clearCart());
         toast.success("Order placed successfully!");
-        router.push("/orders");
       }
     } catch (error) {
       console.error("Failed to create order:", error);
