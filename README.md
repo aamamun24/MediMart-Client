@@ -2,13 +2,20 @@
 
 A modern, responsive frontend for an online medicine shop built with Next.js, Redux Toolkit, RTK Query, Tailwind CSS, and Mongoose (for backend integration). This project focuses on providing a seamless shopping experience for customers looking to buy medicines online.
 
-## Features & Route Structure
+## 📋 Features & Route Structure
+### 🏠 Home Page (/)
 - Navbar with logo and essential menu items.
 - Branding section introducing the shop.
 - Search bar to find medicines by name or category.
 - Overview section showcasing featured medicines.
 - Latest 6 customer reviews.
 - Footer with helpful links.
+
+## 📝 Register Page (/register)
+- Customers can create an account by providing their details.
+
+## 🔑 Login Page (/login)
+- Customers can log in using email and password.
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
