@@ -4,8 +4,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 import { MessageSquareQuote } from "lucide-react";
-import { useEffect, useState } from "react";
-import axios from "axios";
 
 interface Review {
   id: string;
@@ -13,47 +11,27 @@ interface Review {
   userName: string;
   userEmail: number;
 }
+import { useGetReviewQuery } from "@/redux/features/reveiw/reveiwApi";
+import moment from "moment";
+
+interface TReview {
+  _id: string;
+  userName: string;
+  userEmail: string;
+  reviewText: string;
+  starCount: number;
+  orderCount?: number; // optional if not always present
+  createdAt: string;
+  updatedAt: string;
+}
 
 const Review = () => {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: reviewData } = useGetReviewQuery(undefined);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await axios.get("http://localhost:5100/api/reviews");
-        console.log("Fetched reviews:", response.data.data);
-        setReviews(response.data.data);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching reviews:", err);
-        setError("Failed to load reviews. Please try again later.");
-        setLoading(false);
-      }
-    };
-
-    fetchReviews();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="container mx-auto p-4 mb-20 text-center">
-        <p className="text-gray-600">Loading reviews...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto p-4 mb-20 text-center">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
+  console.log(reviewData);
 
   return (
-    <div className="container mx-auto p-4 mb-20">
+    <div className="container bg-white mx-auto p-4 mb-20 mt-40">
       {/* testimonial title */}
       <h2 className="text-2xl md:text-3xl font-bold mb-6 border-l-4 border-[#16a085] px-4">
         <span className="text-[#16a085]">What say</span> our client?
@@ -76,23 +54,41 @@ const Review = () => {
             slidesPerView: 3,
           },
         }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+        className="grid grid-cols-1 md:grid-cols-2 bg-white lg:grid-cols-3"
       >
-        {/* client review card */}
-        {reviews.map((review) => (
+        {/* client riview card */}
+        {reviewData?.data?.map((review: TReview) => (
           <SwiperSlide
-            className="p-4 rounded-lg shadow-md bg-white mb-12 h-20"
-            key={review?.id}
+            className="p-4 rounded-lg shadow-2xl bg-white mb-12 h-20"
+            key={review?._id}
           >
             {/* client review */}
-            <p className="mb-4  text-2xl">
-              <MessageSquareQuote className="text-[#16a085] mb-4 " />
-              Review: {review?.reviewText}
+            <div className="flex justify-center">
+              <p className="flex gap-4">
+                <MessageSquareQuote className="text-[#16a085] mb-4" />
+                Review:{review?.reviewText}
+              </p>
+            </div>
+            <p className="mb-2 flex justify-center">
+              <span className="text-yellow-500 ml-2 flex">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <span key={index}>
+                    {index < review?.starCount ? "★" : "☆"}
+                  </span>
+                ))}
+              </span>
             </p>
-            <h4 className="text-xl mb-2">
-              by <b>{review?.userName as string}</b>
-            </h4>
-            {/* client rating */}
+            {/* rating date */}
+            <div className="flex justify-center items-center gap-4">
+              <h4 className="text-xl mb-2">{review?.userName}</h4> |
+              <p className="mb-2">Email: {review?.userEmail}</p>
+            </div>
+            <p className="mb-2 flex justify-center">
+              Total Order: {review?.orderCount}
+            </p>
+            <p className="mb-2 text-xs flex justify-center text-teal-600">
+              Date: {moment(review?.createdAt).format("MMMM D, YYYY")}
+            </p>
           </SwiperSlide>
         ))}
       </Swiper>
