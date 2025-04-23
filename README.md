@@ -1,4 +1,4 @@
-# 💊 Next.js Medicine Shop - Frontend
+# 💊 Fine Med Medicine Shop - Frontend
 
 A modern, responsive frontend for an online medicine shop built with Next.js, Redux Toolkit, RTK Query, Tailwind CSS, and Mongoose (for backend integration). This project focuses on providing a seamless shopping experience for customers looking to buy medicines online.
 
