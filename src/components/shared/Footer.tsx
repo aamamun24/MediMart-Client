@@ -20,7 +20,7 @@ const Footer = () => {
             <Logo />
             {/* description */}
             <p className="text-white text-sm mt-6">
-              Medimart is your trusted online medicine and healthcare shop,
+              FineMed is your trusted online medicine and healthcare shop,
               offering a wide range of genuine medicines, health products, and
               wellness essentials — delivered safely to your doorstep.
             </p>
@@ -60,12 +60,12 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-4 mb-4">
                 <Mail />
-                <span>support@medimart.com</span>
+                <span>support@FineMed.com</span>
               </li>
               <li className="flex items-center gap-4 mb-4">
                 <MapPinned />
                 <span>
-                  Medimart Support Center 742 Evergreen Terrace Springfield, IL
+                  FineMed Support Center 742 Evergreen Terrace Springfield, IL
                   62704 United States
                 </span>
               </li>
@@ -88,7 +88,7 @@ const Footer = () => {
       {/* All rights reserved */}
       <div className="mt-6">
         <p className="text-white text-center">
-          &copy; 2025 Medimart. All rights reserved.
+          &copy; 2025 FineMed. All rights reserved.
         </p>
       </div>
     </footer>

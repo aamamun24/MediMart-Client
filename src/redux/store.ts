@@ -12,8 +12,11 @@ import {
 } from 'redux-persist';
 
 import cartReducer from './features/cart/cartSlice';
+import orderReducer from './features/order/orderSlice';
 import medicineReducer from './features/medicine/medicineSlice';
 import authReducer from './features/auth/authSlice';
+import userReducer from './features/user/userSlice';        // 👤 Single logged-in user
+import allUserReducer from './features/allUsers/allUserSlice';  // 👥 All users
 import { baseApi } from './api/baseApi';
 
 // Persist configs
@@ -27,22 +30,43 @@ const cartPersistConfig = {
   storage,
 };
 
+const ordersPersistConfig = {
+  key: 'orders',
+  storage,
+};
+
 const medicinePersistConfig = {
   key: 'medicines',
+  storage,
+};
+
+const userPersistConfig = {
+  key: 'user',
+  storage,
+};
+
+const allUsersPersistConfig = {
+  key: 'allUsers',
   storage,
 };
 
 // Persisted reducers
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
 const persistedCartReducer = persistReducer(cartPersistConfig, cartReducer);
+const persistedOrdersReducer = persistReducer(ordersPersistConfig, orderReducer);
 const persistedMedicineReducer = persistReducer(medicinePersistConfig, medicineReducer);
+const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
+const persistedAllUsersReducer = persistReducer(allUsersPersistConfig, allUserReducer);
 
 // Configure store
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
     cart: persistedCartReducer,
+    orders: persistedOrdersReducer,
     medicines: persistedMedicineReducer,
+    user: persistedUserReducer,         // 👤 Persisted single user
+    allUsers: persistedAllUsersReducer, // 👥 Persisted all users
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

@@ -33,6 +33,7 @@ const AllMedicinesPage = () => {
 
   useEffect(() => {
     if (data?.data) {
+      console.log(data)
       const medicinesArray = Array.isArray(data.data)
         ? data.data
         : data.data.medicines;
@@ -169,7 +170,7 @@ const AllMedicinesPage = () => {
                 />
               </div>
 
-              <h3 className="font-semibold text-lg text-gray-800">
+              <h3 className="font-semibold text-lg text-gray-800 mb-2">
                 {medicine.name}
               </h3>
 
@@ -186,6 +187,10 @@ const AllMedicinesPage = () => {
               <p className="text-xl font-bold text-blue-600 mt-2">
                 ${medicine.price}
               </p>
+              <div className="flex gap-2">
+                <p>Prescription</p> <p className="text-2xl relative bottom-1 text-red-600">{(medicine.prescriptionRequired)? "✔" : "✘"}</p>
+              </div>
+              
 
               <div className="flex justify-between mt-4">
                 <Link
@@ -205,6 +210,8 @@ const AllMedicinesPage = () => {
                         quantity: 1,
                         stockQuantity: medicine.quantity,
                         image: medicine.image,
+                        prescriptionRequired: medicine.prescriptionRequired
+
                       })
                     )
                   }

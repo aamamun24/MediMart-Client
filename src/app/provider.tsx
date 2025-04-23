@@ -13,3 +13,4 @@ export const ReduxProvider = ({ children }: { children: React.ReactNode }) => {
     </Provider>
   );
 };
+

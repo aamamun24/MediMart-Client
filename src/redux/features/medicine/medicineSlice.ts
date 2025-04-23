@@ -26,7 +26,7 @@ export interface IMedicine {
 }
 
 // Define the state type for medicines
-type TMedicineState = {
+export type TMedicineState = {
   medicines: IMedicine[];
 };
 

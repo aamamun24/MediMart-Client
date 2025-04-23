@@ -1,12 +1,16 @@
 "use client";
-// Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
-// import required modules
 import { Pagination } from "swiper/modules";
 import { MessageSquareQuote } from "lucide-react";
+
+interface Review {
+  id: string;
+  reviewText: string;
+  userName: string;
+  userEmail: number;
+}
 import { useGetReviewQuery } from "@/redux/features/reveiw/reveiwApi";
 import moment from "moment";
 
