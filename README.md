@@ -60,7 +60,7 @@ A modern, responsive frontend for an online medicine shop built with Next.js, Re
 ## 📌 Getting Started
 ### **1. Clone the repository**
 git clone [https://github.com/your-username/medicine-shop-frontend.git](https://github.com/aamamun24/MediMart-Client.git)
-cd medicine-shop-frontend
+--- cd medicine-shop-frontend
 
 
 
