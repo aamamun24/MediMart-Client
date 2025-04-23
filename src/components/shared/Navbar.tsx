@@ -28,6 +28,7 @@ const Navbar = () => {
     { href: "/cart", label: "Cart" },
     { href: "/checkout", label: "Checkout" },
     { href: "/about", label: "About" },
+    { href: "/review", label: "Reviews" },
     ...(user
       ? [
           user.role === "admin"

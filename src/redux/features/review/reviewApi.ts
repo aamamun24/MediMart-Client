@@ -3,6 +3,7 @@ import { baseApi } from "../../api/baseApi"; // Adjust path as needed
 
 // Define the review data structure
 export type TReview = {
+  _id:string;
   userName: string;
   userEmail: string;
   reviewText: string;
