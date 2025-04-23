@@ -8,15 +8,17 @@ import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 import { MessageSquareQuote } from "lucide-react";
 import { useGetReviewQuery } from "@/redux/features/reveiw/reveiwApi";
+import moment from "moment";
 
 interface TReview {
   _id: string;
   userName: string;
   userEmail: string;
   reviewText: string;
+  starCount: number;
   orderCount?: number; // optional if not always present
-  createdAt:  string;
-  updatedAt:  string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const Review = () => {
@@ -53,27 +55,36 @@ const Review = () => {
         {/* client riview card */}
         {reviewData?.data?.map((review: TReview) => (
           <SwiperSlide
-            className="p-4 rounded-lg shadow-md bg-white mb-12 h-20"
+            className="p-4 rounded-lg shadow-2xl bg-white mb-12 h-20"
             key={review?._id}
           >
             {/* client review */}
-            <p className="mb-4 text-sm">
-              <MessageSquareQuote className="text-[#16a085] mb-4" />
-              Review:{review?.reviewText}
-            </p>
-            <h4 className="text-xl mb-2">Name:{review?.userName}</h4>
-            {/* client rating
-            <p className="mb-2">
+            <div className="flex justify-center">
+              <p className="flex gap-4">
+                <MessageSquareQuote className="text-[#16a085] mb-4" />
+                Review:{review?.reviewText}
+              </p>
+            </div>
+            <p className="mb-2 flex justify-center">
               <span className="text-yellow-500 ml-2 flex">
                 {Array.from({ length: 5 }).map((_, index) => (
-                  <span key={index}>{index < review.rating ? "★" : "☆"}</span>
+                  <span key={index}>
+                    {index < review?.starCount ? "★" : "☆"}
+                  </span>
                 ))}
               </span>
-            </p> */}
+            </p>
             {/* rating date */}
-            <p className="mb-2">Email: {review?.userEmail}</p>
-            <p className="mb-2">Total Order: {review?.orderCount}</p>
-            <p className="mb-2">Date: {review?.createdAt}</p>
+            <div className="flex justify-center items-center gap-4">
+              <h4 className="text-xl mb-2">{review?.userName}</h4> |
+              <p className="mb-2">Email: {review?.userEmail}</p>
+            </div>
+            <p className="mb-2 flex justify-center">
+              Total Order: {review?.orderCount}
+            </p>
+            <p className="mb-2 text-xs flex justify-center text-teal-600">
+              Date: {moment(review?.createdAt).format("MMMM D, YYYY")}
+            </p>
           </SwiperSlide>
         ))}
       </Swiper>
