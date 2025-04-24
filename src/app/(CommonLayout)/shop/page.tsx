@@ -42,8 +42,10 @@ const AllMedicinesPage = () => {
     }
   }, [data, dispatch]);
 
+
+
   const filteredMedicines = useMemo(() => {
-    return medicines.filter((medicine) => {
+    return medicines?.data?.filter((medicine) => {
       const matchesCategory = filterCategory
         ? medicine.category?.toLowerCase() === filterCategory.toLowerCase()
         : true;
