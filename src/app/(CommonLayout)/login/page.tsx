@@ -70,13 +70,9 @@ export default function Login() {
             </label>
             <input
               id="email"
-              type="email"
+              type="text"
               {...register("email", { 
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address"
-                }
+                required: "Email or Phone Number is required",
               })}
               autoComplete="off"
               className="w-full px-4 py-2 mt-1 border border-teal-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"

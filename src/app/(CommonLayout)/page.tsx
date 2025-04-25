@@ -6,7 +6,7 @@ import FeaturedProducts from "@/components/FeaturedProducts/FeaturedProducts";
 
 const HomePage = () => {
   return (
-    <div className="px-4 py-8">
+    <div className=" py-8">
       <Banner />
       <Branding />
       <FeaturedProducts />

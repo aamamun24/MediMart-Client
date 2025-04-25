@@ -9,6 +9,7 @@ import { clearCart } from "@/redux/features/cart/cartSlice";
 import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 import { useCreateOrderMutation } from "@/redux/features/order/orderApi";
 import { postImage } from "@/utils/postImage";
+import { ProtectedRoute } from "@/components/protectedRoutes/ProtectedRouteProps";
 
 // Define TProduct to match orderApi expectation
 type TProduct = { productId: string; quantity: number }[];
@@ -190,7 +191,11 @@ const CheckoutPage = () => {
   };
 
   if (items.length === 0) {
+
     return (
+
+      <ProtectedRoute>
+
       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="bg-white p-8 rounded-xl shadow-xl text-center">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">
@@ -207,10 +212,15 @@ const CheckoutPage = () => {
           </button>
         </div>
       </div>
+
+      </ProtectedRoute>
+
     );
   }
 
   return (
+    <ProtectedRoute>
+    
     <div className="bg-gray-100 min-h-[70vh] py-10">
       <div className="max-w-7xl mx-auto px-4">
         <div className="bg-white shadow-xl rounded-xl p-8">
@@ -340,6 +350,7 @@ const CheckoutPage = () => {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 

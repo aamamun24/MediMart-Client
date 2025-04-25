@@ -41,7 +41,7 @@ const Banner = () => {
           <div className="absolute z-20 text-white inset-0 flex flex-col items-center justify-center text-center px-4">
             <h2 className="text-5xl font-bold mb-6 max-w-2xl drop-shadow-lg">Healthcare Solutions</h2>
             <p className="text-xl mb-8 max-w-xl drop-shadow-lg">Discover our wide range of high-quality medicines</p>
-            <Link href="/allmedicines" className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-8 rounded-full text-lg transition duration-300 shadow-lg hover:shadow-xl">
+            <Link href="/shop" className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-8 rounded-full text-lg transition duration-300 shadow-lg hover:shadow-xl">
               Browse All Medicines
             </Link>
           </div>
@@ -60,7 +60,7 @@ const Banner = () => {
           <div className="absolute z-20 text-white inset-0 flex flex-col items-center justify-center text-center px-4">
             <h2 className="text-5xl font-bold mb-6 max-w-2xl drop-shadow-lg">Your Trusted Pharmacy</h2>
             <p className="text-xl mb-8 max-w-xl drop-shadow-lg">Authentic medicines delivered to your doorstep</p>
-            <Link href="/allmedicines" className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-8 rounded-full text-lg transition duration-300 shadow-lg hover:shadow-xl">
+            <Link href="/shop" className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-8 rounded-full text-lg transition duration-300 shadow-lg hover:shadow-xl">
               Browse All Medicines
             </Link>
           </div>
@@ -79,7 +79,7 @@ const Banner = () => {
           <div className="absolute z-20 text-white inset-0 flex flex-col items-center justify-center text-center px-4">
             <h2 className="text-5xl font-bold mb-6 max-w-2xl drop-shadow-lg">Healthcare Essentials</h2>
             <p className="text-xl mb-8 max-w-xl drop-shadow-lg">Everything you need for your family's wellbeing</p>
-            <Link href="/allmedicines" className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-8 rounded-full text-lg transition duration-300 shadow-lg hover:shadow-xl">
+            <Link href="/shop" className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-8 rounded-full text-lg transition duration-300 shadow-lg hover:shadow-xl">
               Browse All Medicines
             </Link>
           </div>

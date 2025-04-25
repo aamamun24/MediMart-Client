@@ -105,7 +105,7 @@ export default function FeaturedProducts() {
         <button>
           <Link
             className="flex items-center gap-2 bg-gradient-to-r from-[#68d391] to-[#4fd1c5] hover:from-[#48bb78] hover:to-[#38b2ac] transition-all text-white py-3 px-8 rounded-xl text-lg font-semibold shadow-md"
-            href="/medicine"
+            href="/shop"
           >
             View More Medicine...
           </Link>

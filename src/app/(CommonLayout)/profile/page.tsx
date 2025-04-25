@@ -17,6 +17,7 @@ import {
 } from "@/redux/features/user/userApi";
 import { useGetMyOrdersQuery } from "@/redux/features/order/orderApi"; // Import the new endpoint hook
 import { toast } from "sonner";
+import { ProtectedRoute } from "@/components/protectedRoutes/ProtectedRouteProps";
 
 const UserDashboard = () => {
   const dispatch = useDispatch();
@@ -87,46 +88,67 @@ const UserDashboard = () => {
 
   if (!authUser) {
     return (
+      <ProtectedRoute>
+
       <div className="min-h-[70vh] flex items-center justify-center">
         <p>Please log in to view your dashboard.</p>
       </div>
+      </ProtectedRoute>
+
     );
   }
 
   if (isLoading || loading) {
     return (
+      <ProtectedRoute>
+
       <div className="min-h-[70vh] flex items-center justify-center">
         <p>Loading user data...</p>
       </div>
+      </ProtectedRoute>
+
     );
   }
 
   if (isError || error) {
     return (
+      <ProtectedRoute>
+
       <div className="min-h-[70vh] flex items-center justify-center text-red-500">
         Error: {(queryError as any)?.data?.message || error}
       </div>
+      </ProtectedRoute>
+
     );
   }
 
   if (ordersLoading) {
     return (
+      <ProtectedRoute>
+
       <div className="min-h-[70vh] flex items-center justify-center">
         <p>Loading your orders...</p>
       </div>
+      </ProtectedRoute>
+
     );
   }
 
   if (ordersError) {
     return (
+      <ProtectedRoute>
+
       <div className="min-h-[70vh] flex items-center justify-center text-red-500">
         Error:{" "}
         {(ordersQueryError as any)?.data?.message || "Failed to fetch orders."}
       </div>
+      </ProtectedRoute>
+
     );
   }
 
   return (
+    <ProtectedRoute>
     <div className="min-h-[80vh] bg-gray-100 py-10">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md mx-auto">
         <h2 className="text-2xl font-bold mb-4 text-center">User Profile</h2>
@@ -231,6 +253,7 @@ const UserDashboard = () => {
         )}
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 
