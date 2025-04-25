@@ -1,12 +1,8 @@
-import React from 'react';
+import { redirect } from "next/navigation";
 
+const AdminDefaultPage = () => {
+    redirect("/admin/medicines");
 
-const AdminPage = () => {
-    return (
-        <div className='text-5xl'>
-            admin page
-        </div>
-    );
 };
 
-export default AdminPage;
+export default AdminDefaultPage;

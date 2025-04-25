@@ -5,17 +5,9 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  useGetAllMedicinesQuery,
-} from "@/redux/features/medicine/medicineApi";
-import {
-  selectMedicines,
-  setMedicines,
-} from "@/redux/features/medicine/medicineSlice";
-import {
-  addToCart,
-  selectCart,
-} from "@/redux/features/cart/cartSlice";
+import { useGetAllMedicinesQuery } from "@/redux/features/medicine/medicineApi";
+import { selectMedicines, setMedicines } from "@/redux/features/medicine/medicineSlice";
+import { addToCart, selectCart } from "@/redux/features/cart/cartSlice";
 
 const AllMedicinesPage = () => {
   const dispatch = useDispatch();
@@ -77,7 +69,7 @@ const AllMedicinesPage = () => {
     if (sortPrice === "asc") {
       return [...filteredMedicines].sort((a, b) => a.price - b.price);
     } else if (sortPrice === "desc") {
-      return [...filteredMedicines].sort((a, b) => b.price - a.price);
+      return [...filteredMedicines].sort((a, b) => b.price - b.price);
     }
     return filteredMedicines;
   }, [filteredMedicines, sortPrice]);
@@ -161,9 +153,8 @@ const AllMedicinesPage = () => {
       {/* 🧾 Medicines Grid */}
       <div className="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6">
         {sortedMedicines.map((medicine) => {
-          const isInCart = cartItems.some(
-            (item) => item._id === medicine._id
-          );
+          const isInCart = cartItems.some((item) => item._id === medicine._id);
+          const isOutOfStock = medicine.quantity === 0;
 
           return (
             <div
@@ -204,6 +195,7 @@ const AllMedicinesPage = () => {
                 </p>
               </div>
 
+             
               <div className="flex justify-between mt-4">
                 <Link
                   href={`/medicine/${medicine._id}`}
@@ -212,14 +204,14 @@ const AllMedicinesPage = () => {
                   Details
                 </Link>
                 <button
-                  disabled={isInCart}
+                  disabled={isInCart || isOutOfStock}
                   onClick={() =>
                     dispatch(
                       addToCart({
                         _id: medicine._id!,
                         name: medicine.name,
                         price: medicine.price,
-                        quantity: medicine.quantity,
+                        quantity: 1,
                         image: medicine.image,
                         prescriptionRequired: medicine.prescriptionRequired,
                         generic: medicine.generic,
@@ -234,12 +226,12 @@ const AllMedicinesPage = () => {
                     )
                   }
                   className={`py-1 px-3 rounded text-white ${
-                    isInCart
+                    isInCart || isOutOfStock
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
-                  {isInCart ? "Added" : "Add to Cart"}
+                  {isInCart ? "Added" : isOutOfStock ? "Out of Stock" : "Add to Cart"}
                 </button>
               </div>
             </div>

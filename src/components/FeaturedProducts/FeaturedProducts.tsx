@@ -10,7 +10,6 @@ import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-
 export default function FeaturedProducts() {
   const {
     data: medicineData,
@@ -32,17 +31,17 @@ export default function FeaturedProducts() {
         name: medicine.name,
         price: medicine.price,
         quantity,
-        stockQuantity: medicine.quantity,
+        stockQuantity: 1,
         image: medicine.image,
         prescriptionRequired: medicine.prescriptionRequired,
         generic: medicine.generic,
         brand: medicine.brand,
         form: medicine.form,
         category: medicine.category,
-        description:medicine.description,
+        description: medicine.description,
         simptoms: medicine.simptoms,
-        manufacturer:medicine.manufacturer,
-        expiryDate: medicine.expiryDate
+        manufacturer: medicine.manufacturer,
+        expiryDate: medicine.expiryDate,
       })
     );
     toast.success(`${medicine.name || "Medicine"} added to cart!`);
@@ -57,41 +56,50 @@ export default function FeaturedProducts() {
         <span className="text-teal-600">Featured</span> Medicine
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {medicineData?.data?.slice(0, 6).map((medicine: IMedicine) => (
-          <div
-            className="bg-white rounded-lg shadow-2xl p-4"
-            key={medicine?._id}
-          >
-            <div className="flex justify-center">
-              <Image
-                src={medicine?.image || "/default-medicine.jpg"}
-                alt={medicine.name || "Medicine"}
-                width={200}
-                height={200}
-              />
+        {medicineData?.data?.slice(0, 6).map((medicine: IMedicine) => {
+          const isOutOfStock = medicine.quantity === 0;
+
+          return (
+            <div
+              className="bg-white rounded-lg shadow-2xl p-4"
+              key={medicine?._id}
+            >
+              <div className="flex justify-center">
+                <Image
+                  src={medicine?.image || "/default-medicine.jpg"}
+                  alt={medicine.name || "Medicine"}
+                  width={200}
+                  height={200}
+                />
+              </div>
+              <div className="mt-4 leading-6">
+                <h4 className="text-xl">Name: {medicine?.name || "Unknown"}</h4>
+                <p>Brand: {medicine?.brand || "Unknown"}</p>
+                <p>Price: ${(medicine?.price || 0).toFixed(2)}</p>
+                <p>Category: {medicine?.category || "Unknown"}</p>
+              </div>
+              <div className="mt-4 flex justify-between items-center">
+                <Link
+                  className="text-teal-600 font-bold"
+                  href={`/medicine/${medicine._id}`}
+                >
+                  See More Details...
+                </Link>
+                <button
+                  onClick={() => handleAddToCart(medicine)}
+                  disabled={isOutOfStock}
+                  className={`flex items-center gap-2 py-3 px-8 rounded-xl text-lg font-semibold shadow-md text-white ${
+                    isOutOfStock
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-[#68d391] to-[#4fd1c5] hover:from-[#48bb78] hover:to-[#38b2ac] transition-all"
+                  }`}
+                >
+                  <ShoppingCart /> {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                </button>
+              </div>
             </div>
-            <div className="mt-4 leading-6">
-              <h4 className="text-xl">Name: {medicine?.name || "Unknown"}</h4>
-              <p>Brand: {medicine?.brand || "Unknown"}</p>
-              <p>Price: ${(medicine?.price || 0).toFixed(2)}</p>
-              <p>Category: {medicine?.category || "Unknown"}</p>
-            </div>
-            <div className="mt-4 flex justify-between items-center">
-              <Link
-                className="text-teal-600 font-bold"
-                href={`/medicine/${medicine._id}`}
-              >
-                See More Details...
-              </Link>
-              <button
-                onClick={() => handleAddToCart(medicine)}
-                className="flex items-center gap-2 bg-gradient-to-r from-[#68d391] to-[#4fd1c5] hover:from-[#48bb78] hover:to-[#38b2ac] transition-all text-white py-3 px-8 rounded-xl text-lg font-semibold shadow-md"
-              >
-                <ShoppingCart /> Add to Cart
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="mt-10 flex justify-center">
         <button>

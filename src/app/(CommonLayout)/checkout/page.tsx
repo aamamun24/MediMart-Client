@@ -72,17 +72,17 @@ const CheckoutPage = () => {
   };
 
   const handleCODOrder = async () => {
-    const toastId = toast.loading("Processing order...");
+
     if (!authUser?.userEmail) {
-      toast("❌ Please log in to place an order", { id: toastId, duration: 2000 });
+      toast("❌ Please log in to place an order");
       return;
     }
     if (!name || !address || !phone) {
-      toast("❌ Please fill all shipping details", { id: toastId, duration: 2000 });
+      toast("❌ Please fill all shipping details");
       return;
     }
     if (prescriptionRequiredState && !prescription) {
-      toast("❌ Prescription is required", { id: toastId, duration: 2000 });
+      toast("❌ Prescription is required");
       return;
     }
 
@@ -95,10 +95,7 @@ const CheckoutPage = () => {
       } catch (error) {
         const err = error as Error;
         console.error("Prescription upload failed:", err);
-        toast(`❌ Failed to upload prescription image: ${err.message || "Unknown error"}`, {
-          id: toastId,
-          duration: 2000,
-        });
+        toast(`❌ Failed to upload prescription image: ${err.message || "Unknown error"}`);
         return;
       }
     }
@@ -126,8 +123,8 @@ const CheckoutPage = () => {
       console.log("Order creation response:", result);
       if (result.success) {
         dispatch(clearCart());
-        toast("✅ Order placed successfully!", { id: toastId });
-        router.push("/orders"); // Redirect to orders page
+        toast("✅ Order placed successfully!");
+
       } else {
         throw new Error("Order creation failed");
       }
@@ -135,24 +132,21 @@ const CheckoutPage = () => {
       const orderError = error as OrderError;
       console.error("Failed to create order:", error);
       toast(
-        `❌ Order creation failed: ${orderError.data?.message || orderError.message || "Unknown error"}`,
-        { id: toastId, duration: 2000 }
-      );
+        `❌ Order creation failed: ${orderError.data?.message || orderError.message || "Unknown error"}`);
     }
   };
 
   const handleOnlinePayment = async () => {
-    const toastId = toast.loading("Processing payment...");
     if (!authUser?.userEmail) {
-      toast("❌ Please log in to place an order", { id: toastId, duration: 2000 });
+      toast("❌ Please log in to place an order");
       return;
     }
     if (!name || !address || !phone) {
-      toast("❌ Please fill all shipping details", { id: toastId, duration: 2000 });
+      toast("❌ Please fill all shipping details");
       return;
     }
     if (prescriptionRequiredState && !prescription) {
-      toast("❌ Prescription is required", { id: toastId, duration: 2000 });
+      toast("❌ Prescription is required");
       return;
     }
 
@@ -165,10 +159,7 @@ const CheckoutPage = () => {
       } catch (error) {
         const err = error as Error;
         console.error("Prescription upload failed:", err);
-        toast(`❌ Failed to upload prescription image: ${err.message || "Unknown error"}`, {
-          id: toastId,
-          duration: 2000,
-        });
+        toast(`❌ Failed to upload prescription image: ${err.message || "Unknown error"}`);
         return;
       }
     }
@@ -197,7 +188,7 @@ const CheckoutPage = () => {
       if (result.success) {
         dispatch(clearCart());
         if (result.PaymentGatewayPageURL) {
-          toast("✅ Payment initiated successfully!", { id: toastId });
+          toast("✅ Payment initiated successfully!");
           console.log("Redirecting to PaymentGatewayPageURL:", result.PaymentGatewayPageURL);
           window.location.href = result.PaymentGatewayPageURL; // Use window.location.href for external redirect
         } else {
@@ -210,9 +201,7 @@ const CheckoutPage = () => {
       const orderError = error as OrderError;
       console.error("Failed to create order or initiate payment:", error);
       toast(
-        `❌ Payment initiation failed: ${orderError.data?.message || orderError.message || "Unknown error"}`,
-        { id: toastId, duration: 2000 }
-      );
+        `❌ Payment initiation failed: ${orderError.data?.message || orderError.message || "Unknown error"}`);
     }
   };
 
