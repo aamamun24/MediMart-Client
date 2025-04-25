@@ -66,6 +66,7 @@ const ReviewPage = () => {
         setStarCount(1); // Reset to default
         setShowThankYou(true); // Show thank-you message
       }
+      /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
       console.error("Review submission failed:", error);
       const errorMessage = error?.data?.message || "Failed to submit review";

@@ -43,7 +43,7 @@ const medicineApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // GET all medicines
     getAllMedicines: builder.query<MedicinesResponse, GetAllMedicinesQueryParams>({
-      query: (params = {}) => {
+      query: (params) => {
         const queryParams = new URLSearchParams();
 
         if (params.search) queryParams.append("search", params.search);
@@ -54,14 +54,20 @@ const medicineApi = baseApi.injectEndpoints({
         if (params.limit) queryParams.append("limit", params.limit.toString());
         if (params.fields) queryParams.append("fields", params.fields);
 
-        console.log(`/products?${queryParams.toString()}`)
-        return `/products?${queryParams.toString()}`;
-      }
+        console.log(`/products?${queryParams.toString()}`);
+        return {
+          url: `/products${queryParams.toString() ? `?${queryParams.toString()}` : ""}`,
+          method: "GET",
+        };
+      },
     }),
 
     // GET single medicine by ID
     getSingleMedicine: builder.query<MedicineResponse, string>({
-      query: (id) => `/products/${id}`,
+      query: (id) => ({
+        url: `/products/${id}`,
+        method: "GET",
+      }),
     }),
 
     // CREATE a medicine
@@ -70,7 +76,7 @@ const medicineApi = baseApi.injectEndpoints({
         url: "/products",
         method: "POST",
         body: medicineData,
-      })
+      }),
     }),
 
     // UPDATE a medicine

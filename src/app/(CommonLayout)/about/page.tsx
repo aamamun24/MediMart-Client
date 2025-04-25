@@ -4,7 +4,7 @@ import React from 'react'
 
 export default function AboutUs() {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 container mx-auto mt-10 gap-8 px-5 mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 container min-h-[70vh] mx-auto mt-10 gap-8 px-5 mb-20">
           
           
           <div className="relative flex justify-center lg:justify-end">
