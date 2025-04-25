@@ -31,6 +31,14 @@ const MedicineDetailsPage = () => {
           stockQuantity: medicine.quantity,
           image: medicine.image,
           prescriptionRequired: medicine.prescriptionRequired,
+          generic: medicine.generic,
+          brand: medicine.brand,
+          form: medicine.form,
+          category: medicine.category,
+          description:medicine.description,
+          simptoms: medicine.simptoms,
+          manufacturer:medicine.manufacturer,
+          expiryDate: medicine.expiryDate
         })
       );
       toast.success(`${medicine.name} added to cart!`);

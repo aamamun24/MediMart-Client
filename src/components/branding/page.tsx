@@ -4,7 +4,7 @@ const Branding = () => {
       <div className="bg-gradient-to-tr from-[#4fd1c57a] to-[#000000d4] w-full h-full absolute left-0"></div>
       <div className="container mx-auto">
         <div className="relative top-2 md:top-20">
-          <h1 className="text-4xl font-bold text-teal-200 mb-3">Medimart</h1>
+          <h1 className="text-4xl font-bold text-teal-200 mb-3">finemed</h1>
           <p className="text-lg text-white mb-6">
             Your trusted online pharmacy for genuine medicines, health products,
             and wellness care.

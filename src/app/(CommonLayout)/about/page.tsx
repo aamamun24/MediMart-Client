@@ -4,7 +4,8 @@ import React from 'react'
 
 export default function AboutUs() {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 container mx-auto mt-10 gap-8 px-5 mb-20">
+       <div className='min-h-[70vh]'>
+         <div className="grid grid-cols-1 lg:grid-cols-2 container mx-auto mt-10 gap-8 px-5 mb-20">
           
           
           <div className="relative flex justify-center lg:justify-end">
@@ -40,5 +41,6 @@ export default function AboutUs() {
             </p>
           </div>
         </div>
+       </div>
     );
 }

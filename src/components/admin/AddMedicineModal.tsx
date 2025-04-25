@@ -1,10 +1,11 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { postImage } from "@/utils/postImage";
 import { useCreateMedicineMutation } from "@/redux/features/medicine/medicineApi";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectMedicines, setMedicines } from "@/redux/features/medicine/medicineSlice";
 
 interface AddMedicineModalProps {
@@ -12,8 +13,9 @@ interface AddMedicineModalProps {
 }
 
 const AddMedicineModal: React.FC<AddMedicineModalProps> = ({ onClose }) => {
-  const dispatch = useDispatch();
-  const medicines = useSelector(selectMedicines);
+  const dispatch = useAppDispatch();
+  const medicineState = useAppSelector(selectMedicines);
+  const medicines = medicineState.medicines; // Access medicines array
 
   useEffect(() => {
     AOS.init({
@@ -41,7 +43,7 @@ const AddMedicineModal: React.FC<AddMedicineModalProps> = ({ onClose }) => {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [createMedicine] = useCreateMedicineMutation();
+  const [createMedicine, {error }] = useCreateMedicineMutation();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -69,14 +71,16 @@ const AddMedicineModal: React.FC<AddMedicineModalProps> = ({ onClose }) => {
       }
 
       // Upload image and get URL
-      toast("Uploading image...");
+      console.log("Uploading image...");
       const imageUrl = await postImage(imageFile);
-      toast.success("✅ Image uploaded successfully");
+      console.log("Image uploaded:", imageUrl);
 
       // Prepare medicine data
       const medicineData = {
         ...formData,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         price: parseFloat(formData.price as any) || 0,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         quantity: parseInt(formData.quantity as any, 10) || 0,
         image: imageUrl,
         simptoms: formData.simptoms
@@ -86,21 +90,35 @@ const AddMedicineModal: React.FC<AddMedicineModalProps> = ({ onClose }) => {
       };
 
       // Create medicine via API
+      console.log("Creating medicine with data:", medicineData);
       const response = await createMedicine(medicineData).unwrap();
       console.log("Medicine created:", response.data);
-      toast.success("✅ Medicine created successfully");
+      toast("✅ Medicine created successfully");
 
       // Update Redux store optimistically
-      dispatch(setMedicines([...medicines, response.data]));
+      if (Array.isArray(medicines)) {
+        dispatch(setMedicines([...medicines, response.data]));
+      } else {
+        console.warn("Medicines is not an array:", medicines);
+        dispatch(setMedicines([response.data])); // Fallback to initialize array
+      }
 
       onClose();
-    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       console.error("Submission error:", err);
-      toast.error(`❌ Failed to create medicine: ${err?.message || "See console"}`);
+      toast(`❌ Failed to create medicine: ${err.message || "Unknown error"}`);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Display API errors
+  useEffect(() => {
+    if (error) {
+      toast(`❌ API error: ${JSON.stringify(error)}`);
+    }
+  }, [error]);
 
   return (
     <div data-aos="zoom-in" className="fixed inset-0 backdrop-blur-xl flex items-center justify-center z-50">

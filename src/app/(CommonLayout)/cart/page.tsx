@@ -126,14 +126,14 @@ const CartPage = () => {
                           max={item.stockQuantity || 99}
                           value={quantity}
                           onChange={(e) =>
-                            handleQuantityChange(item._id, Number(e.target.value))
+                            handleQuantityChange(item._id!, Number(e.target.value))
                           }
                           className="w-24 text-center rounded-lg border-2 border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
                         />
                       </div>
 
                       <button
-                        onClick={() => handleRemove(item._id)}
+                        onClick={() => handleRemove(item._id!)}
                         className="bg-red-500 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition"
                       >
                         Remove

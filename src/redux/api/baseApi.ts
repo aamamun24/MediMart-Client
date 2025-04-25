@@ -1,25 +1,3 @@
-
-// import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-// import { RootState } from "../store"; // Adjust path if necessary
-
-// export const baseApi = createApi({
-//   reducerPath: "baseApi",
-//   baseQuery: fetchBaseQuery({
-//     baseUrl: "http://localhost:5100/api",
-//     credentials: "include", // Include cookies if your API uses sessions
-//     prepareHeaders: (headers, { getState }) => {
-//       const token =
-//         (getState() as RootState).auth?.token 
-//       // Auth slice is incomplete so ausing a token directly
-//       if (token) {
-//         headers.set("Authorization", `${token}`);
-//       }
-//       return headers;
-//     },
-//   }),
-//   endpoints: () => ({}),
-// });
-
 import {
   createApi,
   fetchBaseQuery,
@@ -35,7 +13,7 @@ interface ErrorData {
 }
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:5100/api",
+  baseUrl: "https://fine-med-server.vercel.app/api",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth?.token;
@@ -60,7 +38,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
       (result.error.data as ErrorData)?.message === "jwt expired")
   ) {
     const refreshResult = await fetch(
-      "http://localhost:5100/api/auth/refresh-token",
+      "https://fine-med-server.vercel.app/api/auth/refresh-token",
       {
         method: "POST",
         credentials: "include",

@@ -23,6 +23,7 @@ export interface IMedicine {
   expiryDate: string;
   createdAt?: string;
   updatedAt?: string;
+  stockQuantity?:number
 }
 
 // Define the state type for medicines
