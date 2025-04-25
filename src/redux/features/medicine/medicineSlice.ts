@@ -23,10 +23,11 @@ export interface IMedicine {
   expiryDate: string;
   createdAt?: string;
   updatedAt?: string;
+  stockQuantity?:number
 }
 
 // Define the state type for medicines
-type TMedicineState = {
+export type TMedicineState = {
   medicines: IMedicine[];
 };
 
@@ -51,4 +52,4 @@ export const { setMedicines } = medicineSlice.actions;
 export default medicineSlice.reducer;
 
 // Selector
-export const selectMedicines = (state: RootState) => state.medicines.medicines;
+export const selectMedicines = (state: RootState) => state.medicines;

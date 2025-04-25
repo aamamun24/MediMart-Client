@@ -1,15 +1,11 @@
-import Review from "@/components/review/Review";
-import AboutUs from "./about/page";
-import Banner from "./banner/page";
+import { Metadata } from "next";
+import HomePageClient from "./HomePageClient";
 
-const HomePage = () => {
-  return (
-    <div className="px-4 py-8">
-      <Banner></Banner>
-      <AboutUs></AboutUs>
-      <Review />
-    </div>
-  );
+export const metadata: Metadata = {
+  title: "FineMed Medicines",
+  description: "Welcome to FineMed Medicines, your trusted online pharmacy.",
 };
 
-export default HomePage;
+export default function HomePage() {
+  return <HomePageClient />;
+}

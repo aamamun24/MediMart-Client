@@ -1,17 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { IMedicine } from "../medicine/medicineSlice";
 
-interface CartItem {
-  _id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  stockQuantity: number;
-  image?: string;
-  prescriptionRequired?: boolean;
-}
 
-interface CartState {
-  items: CartItem[];
+export interface CartState {
+  items: IMedicine[];
 }
 
 const initialState: CartState = {
@@ -22,7 +14,7 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart(state, action: PayloadAction<CartItem>) {
+    addToCart(state, action: PayloadAction<IMedicine>) {
       const existingItem = state.items.find(
         (item) => item._id === action.payload._id
       );
@@ -30,7 +22,7 @@ const cartSlice = createSlice({
         const newQuantity = existingItem.quantity + action.payload.quantity;
         existingItem.quantity = Math.min(
           newQuantity,
-          existingItem.stockQuantity
+          existingItem.quantity
         );
       } else {
         state.items.push(action.payload);

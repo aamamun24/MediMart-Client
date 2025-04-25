@@ -4,32 +4,38 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  useGetAllMedicinesQuery,
-} from "@/redux/features/medicine/medicineApi";
-import {
-  selectMedicines,
-  setMedicines,
-} from "@/redux/features/medicine/medicineSlice";
-import {
-  addToCart,
-  selectCart,
-} from "@/redux/features/cart/cartSlice";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useGetAllMedicinesQuery } from "@/redux/features/medicine/medicineApi";
+import { selectMedicines, setMedicines } from "@/redux/features/medicine/medicineSlice";
+import { addToCart, selectCart } from "@/redux/features/cart/cartSlice";
 
 const AllMedicinesPage = () => {
   const dispatch = useDispatch();
-  const medicines = useSelector(selectMedicines);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const medicines = useSelector(selectMedicines).medicines;
   const cartItems = useSelector(selectCart);
 
-  const [search, setSearch] = useState("");
+  // Initialize search state from URL query parameter
+  const initialSearch = searchParams.get("search") || "";
+  const [search, setSearch] = useState(initialSearch);
   const [filterCategory, setFilterCategory] = useState("");
   const [filterForm, setFilterForm] = useState("");
-  const [filterPrescription, setFilterPrescription] = useState(""); // Prescription filter
-  const [sortPrice, setSortPrice] = useState(""); // Sorting by price
+  const [filterPrescription, setFilterPrescription] = useState("");
+  const [sortPrice, setSortPrice] = useState("");
 
   const { data, isLoading, error } = useGetAllMedicinesQuery({
     search: search || undefined,
   });
+
+  // Update URL when search changes
+  useEffect(() => {
+    if (search) {
+      router.replace(`/shop?search=${encodeURIComponent(search)}`, { scroll: false });
+    } else {
+      router.replace("/shop", { scroll: false });
+    }
+  }, [search, router]);
 
   useEffect(() => {
     if (data?.data) {
@@ -37,7 +43,6 @@ const AllMedicinesPage = () => {
         ? data.data
         : data.data.medicines;
       dispatch(setMedicines(medicinesArray));
-      console.log(data);
     }
   }, [data, dispatch]);
 
@@ -64,26 +69,26 @@ const AllMedicinesPage = () => {
     if (sortPrice === "asc") {
       return [...filteredMedicines].sort((a, b) => a.price - b.price);
     } else if (sortPrice === "desc") {
-      return [...filteredMedicines].sort((a, b) => b.price - a.price);
+      return [...filteredMedicines].sort((a, b) => b.price - b.price);
     }
     return filteredMedicines;
   }, [filteredMedicines, sortPrice]);
 
   if (isLoading)
     return (
-      <div className="text-center py-8 text-gray-500 mt-[20%]">
+      <div className="min-h-[70vh] text-center py-8 text-gray-500 mt-[20%]">
         Loading...
       </div>
     );
   if (error)
     return (
-      <div className="text-center py-8 text-red-600">
+      <div className="min-h-[70vh] text-center py-8 text-red-600">
         Error loading medicines: {JSON.stringify(error)}
       </div>
     );
 
   return (
-    <div className="py-8 px-4 max-w-7xl mx-auto mt-24">
+    <div className="min-h-[70vh] py-8 px-4 max-w-7xl mx-auto mt-10">
       <h2 className="text-2xl font-semibold text-gray-800 text-center mb-6">
         All Medicines
       </h2>
@@ -124,7 +129,6 @@ const AllMedicinesPage = () => {
           <option value="Cream">Cream</option>
         </select>
 
-        {/* Prescription filter */}
         <select
           value={filterPrescription}
           onChange={(e) => setFilterPrescription(e.target.value)}
@@ -135,7 +139,6 @@ const AllMedicinesPage = () => {
           <option value="No">No</option>
         </select>
 
-        {/* Sort by price */}
         <select
           value={sortPrice}
           onChange={(e) => setSortPrice(e.target.value)}
@@ -150,9 +153,8 @@ const AllMedicinesPage = () => {
       {/* 🧾 Medicines Grid */}
       <div className="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6">
         {sortedMedicines.map((medicine) => {
-          const isInCart = cartItems.some(
-            (item) => item._id === medicine._id
-          );
+          const isInCart = cartItems.some((item) => item._id === medicine._id);
+          const isOutOfStock = medicine.quantity === 0;
 
           return (
             <div
@@ -169,7 +171,7 @@ const AllMedicinesPage = () => {
                 />
               </div>
 
-              <h3 className="font-semibold text-lg text-gray-800">
+              <h3 className="font-semibold text-lg text-gray-800 mb-2">
                 {medicine.name}
               </h3>
 
@@ -186,7 +188,14 @@ const AllMedicinesPage = () => {
               <p className="text-xl font-bold text-blue-600 mt-2">
                 ${medicine.price}
               </p>
+              <div className="flex gap-2">
+                <p>Prescription</p>
+                <p className="text-2xl relative bottom-1 text-red-600">
+                  {medicine.prescriptionRequired ? "✔" : "✘"}
+                </p>
+              </div>
 
+             
               <div className="flex justify-between mt-4">
                 <Link
                   href={`/medicine/${medicine._id}`}
@@ -195,7 +204,7 @@ const AllMedicinesPage = () => {
                   Details
                 </Link>
                 <button
-                  disabled={isInCart}
+                  disabled={isInCart || isOutOfStock}
                   onClick={() =>
                     dispatch(
                       addToCart({
@@ -203,18 +212,26 @@ const AllMedicinesPage = () => {
                         name: medicine.name,
                         price: medicine.price,
                         quantity: 1,
-                        stockQuantity: medicine.quantity,
                         image: medicine.image,
+                        prescriptionRequired: medicine.prescriptionRequired,
+                        generic: medicine.generic,
+                        brand: medicine.brand,
+                        form: medicine.form,
+                        category: medicine.category,
+                        description: medicine.description,
+                        simptoms: medicine.simptoms,
+                        manufacturer: medicine.manufacturer,
+                        expiryDate: medicine.expiryDate,
                       })
                     )
                   }
                   className={`py-1 px-3 rounded text-white ${
-                    isInCart
+                    isInCart || isOutOfStock
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
-                  {isInCart ? "Added" : "Add to Cart"}
+                  {isInCart ? "Added" : isOutOfStock ? "Out of Stock" : "Add to Cart"}
                 </button>
               </div>
             </div>

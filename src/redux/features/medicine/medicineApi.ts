@@ -1,15 +1,14 @@
-
 import { IMedicine } from "@/types";
 import { baseApi } from "../../api/baseApi";
 
 // Response Types
-interface MedicineResponse {
+export interface MedicineResponse {
   success: boolean;
   message: string;
   data: IMedicine;
 }
 
-interface MedicinesResponse {
+export interface MedicinesResponse {
   success: boolean;
   message: string;
   data: {
@@ -23,14 +22,14 @@ interface MedicinesResponse {
   };
 }
 
-interface DeleteResponse {
+export interface DeleteResponse {
   success: boolean;
   message: string;
   data: null;
 }
 
 // Query params for filtering/pagination/sorting
-interface GetAllMedicinesQueryParams {
+export interface GetAllMedicinesQueryParams {
   search?: string;
   filter?: string;
   sortBy?: string;
@@ -44,7 +43,7 @@ const medicineApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // GET all medicines
     getAllMedicines: builder.query<MedicinesResponse, GetAllMedicinesQueryParams>({
-      query: (params = {}) => {
+      query: (params) => {
         const queryParams = new URLSearchParams();
 
         if (params.search) queryParams.append("search", params.search);
@@ -55,14 +54,20 @@ const medicineApi = baseApi.injectEndpoints({
         if (params.limit) queryParams.append("limit", params.limit.toString());
         if (params.fields) queryParams.append("fields", params.fields);
 
-        console.log(`/products?${queryParams.toString()}`)
-        return `/products?${queryParams.toString()}`;
-      }
+        console.log(`/products?${queryParams.toString()}`);
+        return {
+          url: `/products${queryParams.toString() ? `?${queryParams.toString()}` : ""}`,
+          method: "GET",
+        };
+      },
     }),
 
     // GET single medicine by ID
     getSingleMedicine: builder.query<MedicineResponse, string>({
-      query: (id) => `/products/${id}`,
+      query: (id) => ({
+        url: `/products/${id}`,
+        method: "GET",
+      }),
     }),
 
     // CREATE a medicine
@@ -71,7 +76,7 @@ const medicineApi = baseApi.injectEndpoints({
         url: "/products",
         method: "POST",
         body: medicineData,
-      })
+      }),
     }),
 
     // UPDATE a medicine
