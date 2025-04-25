@@ -4,17 +4,20 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import Link from "next/link";
 import Image from "next/image";
 import { clearCart, removeFromCart, updateQuantity } from "@/redux/features/cart/cartSlice";
+import { useSelector } from "react-redux";
+import { selectMedicines } from "@/redux/features/medicine/medicineSlice";
 
 const CartPage = () => {
   const { items } = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
+  const medicines = useSelector(selectMedicines).medicines; // Array of medicines with stock quantity
 
-  const handleQuantityChange = (id: string, newQuantity: number) => {
+  const handleQuantityChange = (id: string, newQuantity: number, maxQuantity: number) => {
     const item = items.find((item) => item._id === id);
     if (item) {
-      if (newQuantity > 0 && newQuantity <= (item.stockQuantity || 99)) {
-        dispatch(updateQuantity({ id, quantity: newQuantity }));
-      }
+      // Ensure the new quantity is at least 1 and does not exceed the medicine's stock
+      const clampedQuantity = Math.max(1, Math.min(newQuantity, maxQuantity));
+      dispatch(updateQuantity({ id, quantity: clampedQuantity }));
     }
   };
 
@@ -77,6 +80,10 @@ const CartPage = () => {
                 const quantity = item.quantity || 0;
                 const totalPrice = price * quantity;
 
+                // Find the medicine in the medicines array to get the stock quantity
+                const medicine = medicines.find((med) => med._id === item._id);
+                const maxQuantity = medicine ? (medicine.quantity || 99) : 99;
+
                 return (
                   <div
                     key={item._id}
@@ -112,7 +119,7 @@ const CartPage = () => {
                     </div>
 
                     <div className="flex items-center gap-6">
-                      <div className="flex flex-col items-center">
+                      <div className="flex gap-5 items-center">
                         <label
                           htmlFor={`quantity-${item._id}`}
                           className="text-sm text-gray-700 mb-2 font-semibold"
@@ -123,11 +130,14 @@ const CartPage = () => {
                           id={`quantity-${item._id}`}
                           type="number"
                           min="1"
-                          max={item.stockQuantity || 99}
-                          value={quantity}
-                          onChange={(e) =>
-                            handleQuantityChange(item._id!, Number(e.target.value))
-                          }
+                          max={maxQuantity}
+                          defaultValue={1}
+                          onChange={(e) => {
+                            const value = Number(e.target.value);
+                            if (!isNaN(value)) {
+                              handleQuantityChange(item._id!, value, maxQuantity);
+                            }
+                          }}
                           className="w-24 text-center rounded-lg border-2 border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
                         />
                       </div>
