@@ -15,10 +15,11 @@ import Link from "next/link";
 import { useGetAllMedicinesQuery } from "@/redux/features/medicine/medicineApi";
 import { useGetAllReviewsQuery, useDeleteReviewByIdMutation } from "@/redux/features/review/reviewApi";
 import { toast, Toaster } from "sonner";
+import { ProtectedRoute } from "@/components/protectedRoutes/ProtectedRouteProps";
 
 const MedicineAdminDashboard = () => {
   const dispatch = useDispatch();
-  const medicines = useSelector(selectMedicines);
+  const medicines = useSelector(selectMedicines).medicines;
   const [selectedMedicine, setSelectedMedicine] = useState<IMedicine | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -47,7 +48,7 @@ const MedicineAdminDashboard = () => {
   // Set medicines, users, and orders in store
   useEffect(() => {
     if (allUsersRes?.data) {
-      dispatch(setAllUsers(allUsersRes.data as TUser[]));
+      dispatch(setAllUsers(allUsersRes.data));
     }
   }, [allUsersRes, dispatch]);
 
@@ -56,6 +57,7 @@ const MedicineAdminDashboard = () => {
       dispatch(setMedicines(medicinesData.data.medicines));
     }
   }, [medicinesData, dispatch]);
+
 
   useEffect(() => {
     if (medicines.length === 0 && !medicinesData) {
@@ -119,7 +121,8 @@ const MedicineAdminDashboard = () => {
   const statusOptions = ["pending", "processing", "shipped", "delivered"] as const;
 
   return (
-    <div className="min-h-screen p-6 mt-24 space-y-12 mb-10">
+    <ProtectedRoute>
+    <div className="min-h-[70vh] p-6 mt-24 space-y-12 mb-10">
       <Toaster richColors position="top-center" />
       {/* 🟦 Medicines Table */}
       <div>
@@ -258,7 +261,7 @@ const MedicineAdminDashboard = () => {
                     <td className="py-3 px-4 text-sm text-gray-600">
                       {order?.products?.map((product, index) => {
                         const productName =
-                          medicines.find((m) => m._id === product.productId)?.name || "Unknown";
+                          medicines.find((m : IMedicine) => m._id === product.productId)?.name || "Unknown";
                         return (
                           <div key={`${order._id}-${index}`}>
                             <p>
@@ -384,6 +387,7 @@ const MedicineAdminDashboard = () => {
       )}
       {isAddModalOpen && <AddMedicineModal onClose={closeAddMedicineModal} />}
     </div>
+    </ProtectedRoute>
   );
 };
 

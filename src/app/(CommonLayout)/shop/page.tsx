@@ -18,7 +18,7 @@ import {
 
 const AllMedicinesPage = () => {
   const dispatch = useDispatch();
-  const medicines = useSelector(selectMedicines);
+  const medicines = useSelector(selectMedicines).medicines;
   const cartItems = useSelector(selectCart);
 
   const [search, setSearch] = useState("");

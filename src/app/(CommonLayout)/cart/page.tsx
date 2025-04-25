@@ -35,7 +35,7 @@ const CartPage = () => {
   const prescriptionRequired = items.some((item) => item.prescriptionRequired);
 
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 min-h-[70vh]">
       <div className="flex items-center justify-center">
         <div className="container mx-auto px-6 py-12">
           <h1 className="text-4xl font-semibold text-teal-800 mb-8 text-center">

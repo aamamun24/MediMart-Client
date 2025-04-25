@@ -50,7 +50,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex flex-col justify-center items-center min-h-[70vh] bg-gray-100">
        <Link href="/">
               <h3 className="text-3xl font-bold text-gray-500 mb-5">
                 <span className="text-[#16a085]">Fine</span>Med
@@ -70,13 +70,9 @@ export default function Login() {
             </label>
             <input
               id="email"
-              type="email"
+              type="text"
               {...register("email", { 
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address"
-                }
+                required: "Email or Phone Number is required",
               })}
               autoComplete="off"
               className="w-full px-4 py-2 mt-1 border border-teal-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:outline-none"
