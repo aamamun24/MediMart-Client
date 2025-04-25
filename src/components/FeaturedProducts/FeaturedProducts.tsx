@@ -47,7 +47,7 @@ export default function FeaturedProducts() {
     toast.success(`${medicine.name || "Medicine"} added to cart!`);
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className="text-center">Loading...</div>;
   if (error) return <div>Error loading medicines</div>;
 
   return (

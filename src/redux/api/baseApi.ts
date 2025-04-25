@@ -11,7 +11,8 @@ import { setUser, logout } from "../features/auth/authSlice";
 interface ErrorData {
   message?: string;
 }
-
+// https://fine-med-server.vercel.app/api
+// http://localhost:5100/api
 const baseQuery = fetchBaseQuery({
   baseUrl: "https://fine-med-server.vercel.app/api",
   credentials: "include",

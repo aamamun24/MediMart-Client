@@ -41,6 +41,12 @@ const CheckoutPage = () => {
 
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
+  useEffect(()=>{
+    if(error){
+      console.log("error: ",error)
+    }
+  })
+
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
@@ -199,7 +205,7 @@ const CheckoutPage = () => {
       }
     } catch (error) {
       const orderError = error as OrderError;
-      console.error("Failed to create order or initiate payment:", error);
+      // console.error("Failed to create order or initiate payment:", error);
       toast(
         `❌ Payment initiation failed: ${orderError.data?.message || orderError.message || "Unknown error"}`);
     }
