@@ -1,12 +1,13 @@
+
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMedicines, setMedicines } from "@/redux/features/medicine/medicineSlice";
 import { IMedicine } from "@/types";
-import UpdateMedicineModal from "@/components/admin/UpdateProductModal";
 import AddMedicineModal from "@/components/admin/AddMedicineModal";
 import { useGetAllMedicinesQuery } from "@/redux/features/medicine/medicineApi";
+import UpdateMedicineModal from "@/components/admin/UpdateProductModal";
 
 const Medicines = () => {
   const dispatch = useDispatch();
@@ -16,38 +17,37 @@ const Medicines = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { data: medicinesData, refetch } = useGetAllMedicinesQuery({});
 
-  // Set medicines in store
+  // Set medicines in store when medicinesData changes
   useEffect(() => {
     if (medicinesData?.data?.medicines) {
       dispatch(setMedicines(medicinesData.data.medicines));
     }
   }, [medicinesData, dispatch]);
-console.log(medicines)
+
   // Handle empty medicines
   useEffect(() => {
-    if (medicines.length === 0 && !medicinesData) {
+    if (!medicinesData && medicines.length === 0) {
       dispatch(setMedicines([]));
     }
   }, [dispatch, medicines.length, medicinesData]);
-
-  // Refetch medicines when Redux medicines change
-  useEffect(() => {
-    refetch();
-  }, [medicines, refetch]);
 
   const handleUpdateMedicine = (medicine: IMedicine) => {
     setSelectedMedicine(medicine);
     setIsModalOpen(true);
   };
 
-  const closeUpdateMedicineModal = () => {
+  const closeUpdateMedicineModal = async () => {
     setIsModalOpen(false);
     setSelectedMedicine(null);
+    await refetch(); // Refetch medicines when the update modal closes
   };
 
-  const closeAddMedicineModal = () => {
+  const closeAddMedicineModal = async () => {
     setIsAddModalOpen(false);
+    await refetch(); // Refetch medicines when the add modal closes
   };
+
+  console.log(medicines);
 
   return (
     <div className="min-h-[70vh] p-6 space-y-12 mb-10">
@@ -110,11 +110,18 @@ console.log(medicines)
       </div>
 
       {isModalOpen && selectedMedicine && (
-        <UpdateMedicineModal onClose={closeUpdateMedicineModal} medicine={selectedMedicine} />
+        <UpdateMedicineModal
+          onClose={closeUpdateMedicineModal}
+          medicine={selectedMedicine}
+          refetch={refetch}
+        />
       )}
-      {isAddModalOpen && <AddMedicineModal onClose={closeAddMedicineModal} />}
+      {isAddModalOpen && (
+        <AddMedicineModal onClose={closeAddMedicineModal}/>
+      )}
     </div>
   );
 };
 
 export default Medicines;
+
