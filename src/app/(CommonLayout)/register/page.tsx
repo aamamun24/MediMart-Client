@@ -29,8 +29,24 @@ const Register = () => {
   // Log error from useRegisterMutation when it changes
   useEffect(() => {
     if (error) {
-      // @ts-expect-error error.data.message not typed in RTK Query yet
-      toast.error(`${error?.data?.message || "Registration failed"}`);
+      let msg: string;
+  
+      // Type guard to check if error has a 'data' property (FetchBaseQueryError)
+      if ('data' in error && error.data && typeof error.data === 'object') {
+        const errorData = error.data as { errorSources?: Array<{ message: string }>; message?: string };
+  
+        console.log("R:", errorData?.errorSources);
+        if (errorData?.errorSources && errorData.errorSources.length > 0) {
+          msg = errorData.errorSources[0].message;
+        } else {
+          msg = errorData?.message || 'Unknown error';
+        }
+      } else {
+        // Fallback for SerializedError or other error types
+        msg = 'An unexpected error occurred';
+      }
+  
+      toast.error(`Registration failed | ${msg}`);
     }
   }, [error]);
 
