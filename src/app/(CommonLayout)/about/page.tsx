@@ -4,7 +4,8 @@ import React from 'react'
 
 export default function AboutUs() {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 container mx-auto mt-10 gap-8 px-5 mb-28">
+       <div className='min-h-[70vh]'>
+         <div className="grid grid-cols-1 lg:grid-cols-2 container mx-auto mt-10 gap-8 px-5 mb-20">
           
           
           <div className="relative flex justify-center lg:justify-end">
@@ -31,19 +32,15 @@ export default function AboutUs() {
             </div>
           </div>
     
-          <div className="flex flex-col justify-center text-center lg:text-left space-y-6 px-6">
-  <h1 className="text-4xl font-bold text-teal-600 relative inline-block mb-4">
-    <span className="border-b-4 border-teal-400 pb-1">About FineMed</span>
-  </h1>
-  <p className="text-lg leading-relaxed text-gray-600 max-w-2xl mx-auto lg:mx-0 font-medium">
-    Welcome to <span className="text-teal-600 font-semibold">FineMed</span> — where your health is our priority.
-    We provide <span className="text-teal-500 font-semibold">safe</span>, <span className="text-teal-500 font-semibold">affordable</span>, 
-    and <span className="text-teal-500 font-semibold">reliable</span> medicines, ensuring everyone has access to quality care.
-    <br className="hidden lg:block" />
-    Join us in making healthcare simpler, smarter, and more compassionate.
-  </p>
-</div>
-
+          <div className="flex flex-col justify-center text-center lg:text-left">
+            <h1 className="font-bold text-2xl underline mb-5 text-center">About FineMed</h1>
+            <p className="max-w-3xl mx-auto lg:mx-0 px-6 font-semibold text-gray-500">
+              At FineMed, we are dedicated to providing safe, reliable, and affordable 
+              medications to everyone. Our mission is to make healthcare accessible 
+              through our trusted online pharmacy platform.
+            </p>
+          </div>
         </div>
+       </div>
     );
 }

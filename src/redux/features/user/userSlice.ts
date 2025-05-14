@@ -3,6 +3,7 @@ import { RootState } from "../../store";
 
 // Define the User interface
 export interface IUser {
+  _id?: string
   name: string;
   email: string;
   address: string;

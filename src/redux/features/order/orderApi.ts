@@ -28,6 +28,7 @@ interface OrderResponse {
   success: boolean;
   message: string;
   data: TOrder;
+  PaymentGatewayPageURL?:string
 }
 
 interface OrdersResponse {

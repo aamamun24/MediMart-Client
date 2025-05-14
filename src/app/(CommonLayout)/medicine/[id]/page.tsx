@@ -31,6 +31,14 @@ const MedicineDetailsPage = () => {
           stockQuantity: medicine.quantity,
           image: medicine.image,
           prescriptionRequired: medicine.prescriptionRequired,
+          generic: medicine.generic,
+          brand: medicine.brand,
+          form: medicine.form,
+          category: medicine.category,
+          description:medicine.description,
+          simptoms: medicine.simptoms,
+          manufacturer:medicine.manufacturer,
+          expiryDate: medicine.expiryDate
         })
       );
       toast.success(`${medicine.name} added to cart!`);
@@ -82,7 +90,7 @@ const MedicineDetailsPage = () => {
   }
   return (
     <div className="bg-[#f7fafc]">
-      <div className="container mx-auto px-6 py-12 min-h-screen flex items-center justify-center">
+      <div className="container mx-auto px-6 py-12 min-h-[70vh] flex items-center justify-center">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 bg-white rounded-3xl shadow-2xl overflow-hidden">
           {/* Left Side: Image */}
           <div className="bg-[#e6f4f1] flex items-center justify-center p-8">

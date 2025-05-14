@@ -66,6 +66,7 @@ const ReviewPage = () => {
         setStarCount(1); // Reset to default
         setShowThankYou(true); // Show thank-you message
       }
+      /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
       console.error("Review submission failed:", error);
       const errorMessage = error?.data?.message || "Failed to submit review";
@@ -82,7 +83,7 @@ const ReviewPage = () => {
 
   // Handle loading and error states
   if (ordersLoading) {
-    return <div className="text-center py-12 min-h-[80vh]">Checking your order history...</div>;
+    return <div className="text-center py-12 min-h-[70vh]">Checking your order history...</div>;
   }
 
   if (ordersError) {
@@ -95,7 +96,7 @@ const ReviewPage = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-[80vh] bg-gray-100">
+    <div className="flex flex-col justify-center items-center min-h-[70vh] bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full mt-8">
         <h2 className="text-2xl font-bold mb-6 text-teal-600 text-center">Submit Your Review</h2>
         <form

@@ -1,22 +1,23 @@
 import { baseApi } from "../../api/baseApi";
-import { User } from "./userSlice";
+import { IUser } from "./userSlice";
+
 
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getUser: builder.query<{ data: User }, void>({
+    getUser: builder.query<{ data: IUser }, void>({
       query: () => ({
         url: "/users/me",
         method: "GET",
       }),
     }),
 
-    getAllUser: builder.query<{ data: User }, void>({
+    getAllUser: builder.query<{ data: IUser }, void>({
       query: () => ({
         url: "/users",
         method: "GET",
       }),
     }),
-    updateUser: builder.mutation<{ data: User }, Partial<User>>({
+    updateUser: builder.mutation<{ data: IUser }, Partial<IUser>>({
       query: (userData) => ({
         url: "/users", // Fixed to match your backend route
         method: "PATCH",
